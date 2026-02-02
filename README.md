@@ -6,6 +6,15 @@ This is a command-line NuGet package that you can install with:
 
 ```bash
 dotnet tool install --global HowlDev.Cli.TextDTO
+
+# Or inside of your project
+dotnet tool install HowlDev.Cli.TextDTO
+```
+
+Format (the ... is a repeat of tag and location): 
+
+```bash
+textdto <dtopath> <tag> <exportLocation> ...
 ```
 
 An example of usage: 
