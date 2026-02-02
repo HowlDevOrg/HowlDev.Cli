@@ -35,6 +35,7 @@ You can export a given file as a set of DTO's with any of the 3 following tags:
   - Creates a Zod object with the provided properties (you must install Zod yourself)
   - Names are appended with Schema for Zod parsing and Type for the type inference. Both are exported.
   - Nullable uses the Zod type `.nullable()` since `.optional()` does not do anything in the presence of `.default()` 
+  - Exports types using `z.infer<>`.
 
 ## File structure
 
