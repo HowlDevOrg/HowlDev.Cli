@@ -109,6 +109,8 @@ public static class ConfigToText {
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
             string type = option["type"].ToString()!;
+            bool isArray = type.Contains("[]");
+            type = type.Replace("[]", "");
 
             string d = "";
             if (option.Contains("default")) {
@@ -121,6 +123,9 @@ public static class ConfigToText {
             }
             if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
                 d += ".nullable()";
+            }
+            if (isArray) {
+                d += ".array()";
             }
 
             output += $"    {name}: z.{ConvertCSharpToJS(type)}(){d},\n";

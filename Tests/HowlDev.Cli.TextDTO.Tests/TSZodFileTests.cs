@@ -91,6 +91,34 @@ public class TSZodFileTests {
     }
 
     [Test]
+    public async Task SimpleFileWithNamespaceAndArrayProperty() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "string[]"
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSZodFile(config);
+        await Assert.That(result).IsEqualTo("""
+        import z from "zod"
+
+        export const IdAndTitleDTOSchema = z.object({
+            Name: z.string().array(),
+        });
+
+        export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
+        
+        """);
+    }
+
+    [Test]
     public async Task FullFileWithNamespaceAndFullProperties() {
         string json = """
         {

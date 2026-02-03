@@ -73,6 +73,10 @@ Arrays are not yet supported.
 
 ## Changelog
 
+0.1.2 (2/3/26)
+
+- Added Zod support for the array type
+
 0.1.1 (1/8/26)
 
 - Found out about the RollForward property for applications, so now you don't have to specifically have the 8.0 runtime to run this app. 
