@@ -20,7 +20,7 @@ public class TSClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         export type IdAndTitleDTO = {
             Id: number 
         }
@@ -46,7 +46,7 @@ public class TSClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         export type IdAndTitleDTO = {
             Name: string | undefined
         }
@@ -73,7 +73,7 @@ public class TSClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         export type IdAndTitleDTO = {
             Name: string | undefined
         }
@@ -116,7 +116,7 @@ public class TSClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         /* eslint-disable */
         export type IdAndTitleDTO = {
             Id: number 
@@ -144,7 +144,7 @@ public class TSEnumTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         export type Numbers = "One" | "Two" | "Three" | "Four";
 
         """);
@@ -164,9 +164,9 @@ public class TSEnumTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         export type Numbers = "One" | "Two" | "Three";
-        
+
         """);
     }
 }

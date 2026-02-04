@@ -32,7 +32,7 @@ public static class ConfigToText {
             case "Class":
                 CSharpClassBuilder(file, output);
                 break;
-            case "Enum": 
+            case "Enum":
                 CSharpEnumBuilder(file, output);
                 break;
         }
@@ -89,6 +89,9 @@ public static class ConfigToText {
         switch (file["type"].ToString()) {
             case "Class":
                 ZodClassBuilder(file, output);
+                break;
+            case "Enum":
+                ZodEnumBuilder(file, output);
                 break;
         }
 
@@ -164,8 +167,8 @@ public static class ConfigToText {
     }
 
     private static void JSEnumBuilder(TextConfigFile file, StringBuilder output) {
-        output.AppendLine($"export type {file["name"]} = \"" 
-            + string.Join("\" | \"", file["properties"].AsEnumerable<string>()) 
+        output.AppendLine($"export type {file["name"]} = \""
+            + string.Join("\" | \"", file["properties"].AsEnumerable<string>())
             + "\";");
     }
 
@@ -199,5 +202,10 @@ public static class ConfigToText {
         output.AppendLine("});").AppendLine();
 
         output.AppendLine($"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;");
+    }
+
+    private static void ZodEnumBuilder(TextConfigFile file, StringBuilder output) {
+        output.AppendLine($"export const {file["name"]}Schema = z.enum([\"{string.Join("\", \"", file["properties"].AsEnumerable<string>())}\"]);").AppendLine();
+        output.AppendLine($"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;").AppendLine();
     }
 }

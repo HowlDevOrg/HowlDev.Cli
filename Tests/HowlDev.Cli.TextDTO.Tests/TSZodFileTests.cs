@@ -20,7 +20,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
@@ -50,7 +50,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         import z from "zod"
 
         export const SomethingElseSchema = z.object({
@@ -81,7 +81,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
@@ -110,7 +110,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
@@ -157,7 +157,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await Assert.That(result).IsEqualTo("""
+        await TestHelpers.AssertCodeEquals(result, """
         /* eslint-disable */
         import z from "zod"
 
@@ -171,6 +171,54 @@ public class TSZodClassTests {
         export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
         /* eslint-enable */
 
+        """);
+    }
+}
+public class TSZodEnumTests {
+    [Test]
+    public async Task Enum1() {
+        string json = """
+        {
+            "name": "Numbers", 
+            "type": "Enum", 
+            "properties": [
+                "One", "Two", "Three", 
+                "Four"
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSZodFile(config);
+        await TestHelpers.AssertCodeEquals(result, """
+        import z from "zod"
+
+        export const NumbersSchema = z.enum(["One", "Two", "Three", "Four"]);
+
+        export type NumbersType = z.infer<typeof NumbersSchema>;
+
+        """);
+    }
+
+    [Test]
+    public async Task Enum2() {
+        string json = """
+        {
+            "name": "Numbers", 
+            "namespace": "HowlDev.Cli.Tests", 
+            "type": "Enum", 
+            "properties": [
+                "One", "Two", "Three"
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSZodFile(config);
+        await TestHelpers.AssertCodeEquals(result, """
+        import z from "zod"
+
+        export const NumbersSchema = z.enum(["One", "Two", "Three"]);
+
+        export type NumbersType = z.infer<typeof NumbersSchema>;
         """);
     }
 }
