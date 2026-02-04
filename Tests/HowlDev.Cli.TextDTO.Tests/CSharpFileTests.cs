@@ -20,7 +20,7 @@ public class CSharpClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         public class IdAndTitleDTO {
             public int Id { get; set; } 
         }
@@ -46,7 +46,7 @@ public class CSharpClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         public class IdAndTitleDTO {
             public string? Name { get; set; } = "Default Name";
         }
@@ -73,7 +73,7 @@ public class CSharpClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         
         public class IdAndTitleDTO {
@@ -122,7 +122,7 @@ public class CSharpClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         #pragma warning disable
         namespace ProjectTracker.Classes;
         
@@ -152,7 +152,7 @@ public class CSharpEnumTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         public enum Numbers {
             One,
             Two,
@@ -177,7 +177,7 @@ public class CSharpEnumTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         
         public enum Numbers {

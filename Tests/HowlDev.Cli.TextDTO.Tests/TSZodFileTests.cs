@@ -20,7 +20,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
@@ -50,7 +50,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
         export const SomethingElseSchema = z.object({
@@ -81,7 +81,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
@@ -110,7 +110,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
@@ -157,7 +157,7 @@ public class TSZodClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         /* eslint-disable */
         import z from "zod"
 
@@ -189,7 +189,7 @@ public class TSZodEnumTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
         export const NumbersSchema = z.enum(["One", "Two", "Three", "Four"]);
@@ -213,10 +213,10 @@ public class TSZodEnumTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.AssertCodeEquals(result, """
+        await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
-        export const NumbersSchema = z.enum(["One", "Two", "Three"]);
+        export const NumbersSchema = z.enum(["One", "Two", "Three"]);   
 
         export type NumbersType = z.infer<typeof NumbersSchema>;
         """);
