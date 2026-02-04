@@ -24,9 +24,87 @@ public static class ConfigToText {
             output.AppendLine("#pragma warning disable");
         }
 
-        if (file.Contains("namespace"))
+        if (file.Contains("namespace")) {
             output.AppendLine($"namespace {file["namespace"]};").AppendLine();
+        }
 
+        switch (file["type"].ToString()) {
+            case "Class":
+                CSharpClassBuilder(file, output);
+                break;
+        }
+        return output.ToString();
+    }
+
+    /// <summary>
+    /// Returns a JS Type file with full exports. 
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static string ToTSFile(TextConfigFile file) {
+        if (file.Type != ConfigOptionType.Object) {
+            throw new InvalidOperationException("Configuration must be of type Object.");
+        }
+        var output = new StringBuilder();
+
+        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
+        if (ignoreWarnings) {
+            output.AppendLine("/* eslint-disable */");
+        }
+
+        switch (file["type"].ToString()) {
+            case "Class":
+                JSClassBuilder(file, output);
+                break;
+        }
+
+        if (ignoreWarnings) {
+            output.AppendLine("/* eslint-enable */");
+        }
+        return output.ToString();
+    }
+
+    /// <summary>
+    /// Returns a JS Zod file with the zod import and one-level objects. 
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static string ToTSZodFile(TextConfigFile file) {
+        if (file.Type != ConfigOptionType.Object) {
+            throw new InvalidOperationException("Configuration must be of type Object.");
+        }
+        var output = new StringBuilder();
+
+        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
+        if (ignoreWarnings) {
+            output.AppendLine("/* eslint-disable */");
+        }
+
+        output.AppendLine("import z from \"zod\"").AppendLine();
+
+        switch (file["type"].ToString()) {
+            case "Class":
+                ZodClassBuilder(file, output);
+                break;
+        }
+
+        if (ignoreWarnings) {
+            output.AppendLine("/* eslint-enable */");
+        }
+        return output.ToString();
+    }
+
+    private static string ConvertCSharpToJS(string val) {
+        return val switch {
+            "string" => "string",
+            "bool" => "boolean",
+            "byte" or "sbyte" or "short" or "ushort" or "int" or "uint" or "long" or "ulong" or "float" or "double" or "decimal" => "number",
+            "object" or "dynamic" => "any",
+            "DateTime" or "DateTimeOffset" => "Date",
+            "Guid" => "string",
+            _ => val,
+        };
+    }
+
+    private static void CSharpClassBuilder(TextConfigFile file, StringBuilder output) {
         output.AppendLine($"public class {file["name"]} {{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
@@ -52,24 +130,9 @@ public static class ConfigToText {
 
         }
         output.AppendLine("}");
-        return output.ToString();
     }
 
-    /// <summary>
-    /// Returns a JS Type file with full exports. 
-    /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static string ToTSFile(TextConfigFile file) {
-        if (file.Type != ConfigOptionType.Object) {
-            throw new InvalidOperationException("Configuration must be of type Object.");
-        }
-        var output = new StringBuilder();
-
-        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
-        if (ignoreWarnings) {
-            output.AppendLine("/* eslint-disable */");
-        }
-
+    private static void JSClassBuilder(TextConfigFile file, StringBuilder output) {
         output.AppendLine($"export type {file["name"]} = {{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
@@ -86,30 +149,9 @@ public static class ConfigToText {
 
         }
         output.AppendLine("}");
-
-        if (ignoreWarnings) {
-            output.AppendLine("/* eslint-enable */");
-        }
-        return output.ToString();
     }
 
-    /// <summary>
-    /// Returns a JS Zod file with the zod import and one-level objects. 
-    /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static string ToTSZodFile(TextConfigFile file) {
-        if (file.Type != ConfigOptionType.Object) {
-            throw new InvalidOperationException("Configuration must be of type Object.");
-        }
-        var output = new StringBuilder();
-
-        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
-        if (ignoreWarnings) {
-            output.AppendLine("/* eslint-disable */");
-        }
-
-        output.AppendLine("import z from \"zod\"").AppendLine();
-
+    private static void ZodClassBuilder(TextConfigFile file, StringBuilder output) {
         output.AppendLine($"export const {file["name"]}Schema = z.object({{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
@@ -139,22 +181,5 @@ public static class ConfigToText {
         output.AppendLine("});").AppendLine();
 
         output.AppendLine($"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;");
-
-        if (ignoreWarnings) {
-            output.AppendLine("/* eslint-enable */");
-        }
-        return output.ToString();
-    }
-
-    private static string ConvertCSharpToJS(string val) {
-        return val switch {
-            "string" => "string",
-            "bool" => "boolean",
-            "byte" or "sbyte" or "short" or "ushort" or "int" or "uint" or "long" or "ulong" or "float" or "double" or "decimal" => "number",
-            "object" or "dynamic" => "any",
-            "DateTime" or "DateTimeOffset" => "Date",
-            "Guid" => "string",
-            _ => val,
-        };
     }
 }

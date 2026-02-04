@@ -9,6 +9,7 @@ public class TSFileTests {
         string json = """
         {
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Id",
@@ -32,6 +33,7 @@ public class TSFileTests {
         string json = """
         {
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -58,6 +60,7 @@ public class TSFileTests {
         {
             "namespace": "HowlDev.Cli.Tests",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -84,6 +87,7 @@ public class TSFileTests {
         {
             "namespace": "ProjectTracker.Classes",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "ignoreWarnings": true,
             "properties": [
                 {

@@ -46,9 +46,11 @@ Here's the structure:
 ```json
 {
   "name": "IdAndTitleDTO", // Required
+  "type": "Class", // Required (can be either [Class, Enum])
   "namespace": "ProjectTracker.Classes", // This is an optional thing for C# classes only (only file-scoped is available)
   "ignoreWarnings": true, // Also optional; uses the language-specific disable of warnings
   "properties": [
+    // If the type is Class
     {
       "name": "Id", // These two properties are required
       "type": "int",
@@ -56,6 +58,8 @@ Here's the structure:
       "nullable": true // You can make a property optional (optional param)
     },
     ... // Add as many properties here as needed
+    // If the type is Enum
+    "Type1", "Type2", ...
   ]
 }
 ```

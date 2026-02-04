@@ -9,6 +9,7 @@ public class TSZodFileTests {
         string json = """
         {
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Id",
@@ -36,6 +37,7 @@ public class TSZodFileTests {
         string json = """
         {
             "name": "SomethingElse", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -66,6 +68,7 @@ public class TSZodFileTests {
         {
             "namespace": "HowlDev.Cli.Tests",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -96,6 +99,7 @@ public class TSZodFileTests {
         {
             "namespace": "HowlDev.Cli.Tests",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -124,6 +128,7 @@ public class TSZodFileTests {
         {
             "namespace": "ProjectTracker.Classes",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "ignoreWarnings": true,
             "properties": [
                 {

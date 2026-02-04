@@ -9,6 +9,7 @@ public class CSharpFileTests {
         string json = """
         {
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Id",
@@ -32,6 +33,7 @@ public class CSharpFileTests {
         string json = """
         {
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -58,6 +60,7 @@ public class CSharpFileTests {
         {
             "namespace": "HowlDev.Cli.Tests",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "properties": [
                 {
                     "name": "Name",
@@ -86,6 +89,7 @@ public class CSharpFileTests {
         {
             "namespace": "ProjectTracker.Classes",
             "name": "IdAndTitleDTO", 
+            "type": "Class", 
             "ignoreWarnings": true,
             "properties": [
                 {
