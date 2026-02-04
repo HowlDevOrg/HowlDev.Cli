@@ -129,3 +129,44 @@ public class TSClassTests {
         """);
     }
 }
+public class TSEnumTests {
+    [Test]
+    public async Task Enum1() {
+        string json = """
+        {
+            "name": "Numbers", 
+            "type": "Enum", 
+            "properties": [
+                "One", "Two", "Three", 
+                "Four"
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSFile(config);
+        await Assert.That(result).IsEqualTo("""
+        export type Numbers = "One" | "Two" | "Three" | "Four";
+
+        """);
+    }
+
+    [Test]
+    public async Task Enum2() {
+        string json = """
+        {
+            "name": "Numbers", 
+            "namespace": "HowlDev.Cli.Tests", 
+            "type": "Enum", 
+            "properties": [
+                "One", "Two", "Three"
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSFile(config);
+        await Assert.That(result).IsEqualTo("""
+        export type Numbers = "One" | "Two" | "Three";
+        
+        """);
+    }
+}

@@ -58,6 +58,9 @@ public static class ConfigToText {
             case "Class":
                 JSClassBuilder(file, output);
                 break;
+            case "Enum":
+                JSEnumBuilder(file, output);
+                break;
         }
 
         if (ignoreWarnings) {
@@ -158,6 +161,12 @@ public static class ConfigToText {
 
         }
         output.AppendLine("}");
+    }
+
+    private static void JSEnumBuilder(TextConfigFile file, StringBuilder output) {
+        output.AppendLine($"export type {file["name"]} = \"" 
+            + string.Join("\" | \"", file["properties"].AsEnumerable<string>()) 
+            + "\";");
     }
 
     private static void ZodClassBuilder(TextConfigFile file, StringBuilder output) {
