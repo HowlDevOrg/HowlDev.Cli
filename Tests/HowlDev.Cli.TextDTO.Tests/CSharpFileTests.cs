@@ -3,7 +3,7 @@ using HowlDev.IO.Text.ConfigFile.Enums;
 
 namespace HowlDev.Cli.TextDTO.Tests;
 
-public class CSharpFileTests {
+public class CSharpClassTests {
     [Test]
     public async Task SimpleFileNoNamespaceAnd1Property() {
         string json = """
