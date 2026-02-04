@@ -32,6 +32,9 @@ public static class ConfigToText {
             case "Class":
                 CSharpClassBuilder(file, output);
                 break;
+            case "Enum": 
+                CSharpEnumBuilder(file, output);
+                break;
         }
         return output.ToString();
     }
@@ -129,6 +132,12 @@ public static class ConfigToText {
             output.AppendLine($"    public {type} {name}{d}");
 
         }
+        output.AppendLine("}");
+    }
+
+    private static void CSharpEnumBuilder(TextConfigFile file, StringBuilder output) {
+        output.AppendLine($"public enum {file["name"]} {{");
+        output.Append("    " + string.Join(",\n    ", file["properties"].AsEnumerable<string>())).AppendLine();
         output.AppendLine("}");
     }
 
