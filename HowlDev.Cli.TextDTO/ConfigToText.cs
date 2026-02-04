@@ -1,3 +1,4 @@
+using System.Text;
 using HowlDev.IO.Text.ConfigFile;
 using HowlDev.IO.Text.ConfigFile.Enums;
 
@@ -16,40 +17,42 @@ public static class ConfigToText {
             throw new InvalidOperationException("Configuration must be of type Object.");
         }
 
-        string output = "";
+        var output = new StringBuilder();
 
         bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
         if (ignoreWarnings) {
-            output += "#pragma warning disable\n";
+            output.AppendLine("#pragma warning disable");
         }
 
         if (file.Contains("namespace"))
-            output += "namespace " + file["namespace"] + ";\n\n";
+            output.AppendLine($"namespace {file["namespace"]};").AppendLine();
 
-        output += "public class " + file["name"] + " {\n";
+        output.AppendLine($"public class {file["name"]} {{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
             string type = option["type"].ToString()!;
 
-            string d = "\n";
+            string d = "";
             if (option.Contains("default")) {
                 if (type == "string") {
                     d = '"' + option["default"].ToString() + '"';
                 } else {
                     d = option["default"].ToString()!;
                 }
-                d = $"= {d};\n";
+                d = $" {{ get; set; }} = {d};";
+            } else {
+                d = " { get; set; } ";
             }
 
             if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
                 type += "?";
             }
 
-            output += $"    public {type} {name} {"{ get; set; }"} {d}";
+            output.AppendLine($"    public {type} {name}{d}");
 
         }
-        output += "}\n";
-        return output;
+        output.AppendLine("}");
+        return output.ToString();
     }
 
     /// <summary>
@@ -60,32 +63,34 @@ public static class ConfigToText {
         if (file.Type != ConfigOptionType.Object) {
             throw new InvalidOperationException("Configuration must be of type Object.");
         }
-        string output = "";
+        var output = new StringBuilder();
 
         bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
         if (ignoreWarnings) {
-            output += "/* eslint-disable */\n";
+            output.AppendLine("/* eslint-disable */");
         }
 
-        output += "export type " + file["name"] + " = {\n";
+        output.AppendLine($"export type {file["name"]} = {{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
             string type = option["type"].ToString()!;
 
-            string d = "\n";
+            string nullable = "";
+            string trailingSpace = " ";
             if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
-                d = "| undefined" + d;
+                nullable = " | undefined";
+                trailingSpace = "";
             }
 
-            output += $"    {name}: {ConvertCSharpToJS(type)} {d}";
+            output.AppendLine($"    {name}: {ConvertCSharpToJS(type)}{nullable}{trailingSpace}");
 
         }
-        output += "}\n";
+        output.AppendLine("}");
 
         if (ignoreWarnings) {
-            output += "/* eslint-enable */\n";
+            output.AppendLine("/* eslint-enable */");
         }
-        return output;
+        return output.ToString();
     }
 
     /// <summary>
@@ -96,16 +101,16 @@ public static class ConfigToText {
         if (file.Type != ConfigOptionType.Object) {
             throw new InvalidOperationException("Configuration must be of type Object.");
         }
-        string output = "";
+        var output = new StringBuilder();
 
         bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
         if (ignoreWarnings) {
-            output += "/* eslint-disable */\n";
+            output.AppendLine("/* eslint-disable */");
         }
 
-        output += "import z from \"zod\"\n\n";
+        output.AppendLine("import z from \"zod\"").AppendLine();
 
-        output += "export const " + file["name"] + "Schema = z.object({\n";
+        output.AppendLine($"export const {file["name"]}Schema = z.object({{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
             string type = option["type"].ToString()!;
@@ -128,17 +133,17 @@ public static class ConfigToText {
                 d += ".array()";
             }
 
-            output += $"    {name}: z.{ConvertCSharpToJS(type)}(){d},\n";
+            output.AppendLine($"    {name}: z.{ConvertCSharpToJS(type)}(){d},");
 
         }
-        output += "});\n\n";
+        output.AppendLine("});").AppendLine();
 
-        output += $"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;\n";
+        output.AppendLine($"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;");
 
         if (ignoreWarnings) {
-            output += "/* eslint-enable */\n";
+            output.AppendLine("/* eslint-enable */");
         }
-        return output;
+        return output.ToString();
     }
 
     private static string ConvertCSharpToJS(string val) {
