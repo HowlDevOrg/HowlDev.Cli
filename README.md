@@ -77,6 +77,10 @@ Arrays are not yet supported.
 
 ## Changelog
 
+0.2.1 (2/6/26)
+
+- Updated internal HowlDev.IO.Text.ConfigFile to handle some edge cases better in JSON. 
+
 0.2 (2/3/26)
 
 - BREAKING CHANGE
