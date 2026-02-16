@@ -1,6 +1,8 @@
 ﻿using HowlDev.Cli.FullStackBuilder;
 using Spectre.Console;
 
+StaticFuncs.RefreshScreen("Initialize", StaticFuncs.HighlightColor);
+
 (bool flowControl, ProjectConfiguration config) = StaticFuncs.InitializeFolderNames();
 
 if (!flowControl) {
@@ -9,12 +11,12 @@ if (!flowControl) {
 
 StaticFuncs.MakeDirectories(config);
 
-Console.WriteLine();
+AnsiConsole.WriteLine();
 
 StaticFuncs.InitializeVite(config);
 StaticFuncs.InitializeCsharp(config);
 
-Console.Clear();
+StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
 flowControl = AnsiConsole.Confirm("Projects have been initialized. Would you like to further configure your stack?", false);
 
 if (!flowControl) {
@@ -23,15 +25,15 @@ if (!flowControl) {
     return;
 }
 
-Console.Clear();
-AnsiConsole.Write(new Rule($"[{StaticFuncs.ViteColor}]Configuring Frontend[/]"));
+StaticFuncs.RefreshScreen("Configuring Frontend", StaticFuncs.ViteColor);
 
 flowControl = AnsiConsole.Confirm("Would you like to configure the frontend? \nYou can install packages and set up the Vite config file.");
 if (flowControl) {
     StaticFuncs.ConfigureFrontend(config);
     StaticFuncs.ConfigureFrontendFiles(config);
-    Console.WriteLine();
 }
+
+StaticFuncs.RefreshScreen("Configuring Backend", StaticFuncs.CSharpColor);
 
 flowControl = AnsiConsole.Confirm("Would you like to configure the backend? \nYou can install packages, set up environment variables, and initialize Program.cs.");
 if (flowControl) {

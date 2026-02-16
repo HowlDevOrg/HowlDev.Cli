@@ -12,8 +12,6 @@ public static class StaticFuncs {
 
     #region Initialization
     public static (bool flowControl, ProjectConfiguration value) InitializeFolderNames() {
-        Console.Clear();
-
         Console.WriteLine("This tool will help scaffold a Vite frontend and a C# backend.");
 
         string csharp = AnsiConsole.Ask<string>($"What's the [{CSharpColor}]C#[/] project name?");
@@ -42,7 +40,7 @@ public static class StaticFuncs {
     }
 
     public static void InitializeVite(ProjectConfiguration config) {
-        Console.Clear();
+        RefreshScreen("Initialize", HighlightColor);
 
         AnsiConsole.MarkupLine($"Initializing [{ViteColor}]Vite[/] project.");
         SelectionPrompt<FrontendPackageManager> p = new();
@@ -63,7 +61,7 @@ public static class StaticFuncs {
     }
 
     public static void InitializeCsharp(ProjectConfiguration config) {
-        Console.Clear();
+        RefreshScreen("Initialize", HighlightColor);
 
         AnsiConsole.MarkupLine($"Initializing [{CSharpColor}]CSharp[/] project.");
         AnsiConsole.MarkupLine($"Select your [{HighlightColor}]API type[/].");
@@ -117,7 +115,8 @@ public static class StaticFuncs {
     #endregion
     #region Configuration
     public static void ConfigureFrontend(ProjectConfiguration config) {
-        Console.Clear();
+        RefreshScreen("Configuring Frontend", ViteColor);
+
         List<PackageDefinition> result = AnsiConsole.Prompt(new MultiSelectionPrompt<PackageDefinition>()
             .Title("Select which packages you'd like to install in the frontend: ")
             .NotRequired()
@@ -141,16 +140,17 @@ public static class StaticFuncs {
     }
 
     public static void ConfigureFrontendFiles(ProjectConfiguration config) {
-        Console.Clear();
+        RefreshScreen("Configuring Frontend", ViteColor);
+        
         bool flowControl = AnsiConsole.Confirm($"Would you like a function that helps make [{HighlightColor}]HTTP calls[/]?");
         if (flowControl) {
             bool useTypeScript = DetectTypeScript(config.ViteFolder);
             string extension = useTypeScript ? "ts" : "js";
             string templateName = $"fetchHelpers.{extension}";
             string resourceName = $"HowlDev.Cli.FullStackBuilder.TemplateFiles.frontendAPI.{templateName}";
-            
+
             AnsiConsole.MarkupLine($"Detected {(useTypeScript ? "[blue]TypeScript[/]" : "[yellow]JavaScript[/]")} project");
-            
+
             CopyEmbeddedResourceToFile(resourceName, Path.Combine(config.ViteFolder, "src", "api", templateName));
         }
 
@@ -178,6 +178,15 @@ public static class StaticFuncs {
 
 
     // Entirely by AI from here below
+    public static void RefreshScreen(string title, string color) {
+        Console.Clear();
+        AnsiConsole.Write(
+            new Panel(Align.Center(new Markup($"[{color}]{title}[/]")))
+                .Expand()
+                .Border(BoxBorder.Double)
+        );
+    }
+
     private static void Run(string file, string args, string? cwd = null, bool redirectOutput = true) {
         var psi = new ProcessStartInfo {
             FileName = file,
@@ -196,7 +205,7 @@ public static class StaticFuncs {
 
     private static void CopyEmbeddedResourceToFile(string resourceName, string destinationPath) {
         var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        
+
         using var stream = assembly.GetManifestResourceStream(resourceName);
         if (stream == null) {
             throw new InvalidOperationException($"Embedded resource '{resourceName}' not found.");
@@ -209,13 +218,13 @@ public static class StaticFuncs {
 
         using var fileStream = File.Create(destinationPath);
         stream.CopyTo(fileStream);
-        
+
         AnsiConsole.MarkupLine($"Copied template to [{HighlightColor}]{destinationPath}[/]");
     }
 
     private static bool DetectTypeScript(string viteFolder) {
         string srcPath = Path.Combine(viteFolder, "src");
-        
+
         if (!Directory.Exists(srcPath)) {
             return false; // Default to JavaScript if src folder doesn't exist yet
         }
