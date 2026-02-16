@@ -1,6 +1,6 @@
-using System.Text;
 using HowlDev.IO.Text.ConfigFile;
 using HowlDev.IO.Text.ConfigFile.Enums;
+using System.Text;
 
 namespace HowlDev.Cli.TextDTO;
 
