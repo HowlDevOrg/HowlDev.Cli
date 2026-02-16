@@ -4,6 +4,7 @@ using System.Diagnostics;
 namespace HowlDev.Cli.FullStackBuilder;
 
 public static class StaticFuncs {
+    #region Initialization
     public static (bool flowControl, ProjectConfiguration value) InitializeFolderNames() {
         Console.Clear();
 
@@ -48,10 +49,10 @@ public static class StaticFuncs {
         Run("cd", "./" + config.ViteFolder);
         switch (manager) {
             case FrontendPackageManager.Npm:
-                Run("npm", "create vite@latest ./" + config.ViteFolder);
+                Run("npm", "create vite@latest ./" + config.ViteFolder, redirectOutput: false);
                 break;
             case FrontendPackageManager.Pnpm:
-                Run("pnpm", "create vite ./" + config.ViteFolder);
+                Run("pnpm", "create vite ./" + config.ViteFolder, redirectOutput: false);
                 break;
         }
         Run("cd", "..");
@@ -71,24 +72,25 @@ public static class StaticFuncs {
             a => {
                 switch (manager) {
                     case BackendAPIType.CoreEmpty:
-                        Run("dotnet", "new web -o " + config.CSharpFolder, redirectOutput: true);
+                        Run("dotnet", "new web -o " + config.CSharpFolder);
                         break;
                     case BackendAPIType.WebApi:
-                        Run("dotnet", "new webapi -o " + config.CSharpFolder, redirectOutput: true);
+                        Run("dotnet", "new webapi -o " + config.CSharpFolder);
                         break;
                     case BackendAPIType.ControllerApi:
-                        Run("dotnet", "new webapi -controllers -o " + config.CSharpFolder, redirectOutput: true);
+                        Run("dotnet", "new webapi -controllers -o " + config.CSharpFolder);
                         break;
                 }
-                Run("dotnet", "new sln", cwd: "./" + config.CSharpFolder, redirectOutput: true);
-                Run("dotnet", "sln add .", cwd: "./" + config.CSharpFolder, redirectOutput: true);
+                Run("dotnet", "new sln", cwd: "./" + config.CSharpFolder);
+                Run("dotnet", "sln add .", cwd: "./" + config.CSharpFolder);
             }
         );
 
         AnsiConsole.MarkupLine("[green]Done![/]");
     }
+    #endregion
 
-    private static void Run(string file, string args, string? cwd = null, bool redirectOutput = false) {
+    private static void Run(string file, string args, string? cwd = null, bool redirectOutput = true) {
         var psi = new ProcessStartInfo {
             FileName = file,
             Arguments = args,
