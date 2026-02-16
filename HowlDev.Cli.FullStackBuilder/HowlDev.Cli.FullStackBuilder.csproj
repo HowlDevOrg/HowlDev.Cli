@@ -13,4 +13,9 @@
     <PackageReference Include="Spectre.Console" Version="0.54.1-alpha.0.37" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="TemplateFiles\frontendAPI\fetchHelpers.js" />
+    <EmbeddedResource Include="TemplateFiles\frontendAPI\fetchHelpers.ts" />
+  </ItemGroup>
+
 </Project>
