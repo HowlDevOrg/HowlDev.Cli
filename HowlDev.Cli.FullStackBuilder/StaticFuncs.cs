@@ -4,18 +4,24 @@ using System.Diagnostics;
 namespace HowlDev.Cli.FullStackBuilder;
 
 public static class StaticFuncs {
+    // Color constants
+    private const string ViteColor = "blue";
+    private const string CSharpColor = "green";
+    private const string RedColor = "red";
+    private const string HighlightColor = "slateblue1";
+
     #region Initialization
     public static (bool flowControl, ProjectConfiguration value) InitializeFolderNames() {
         Console.Clear();
 
         Console.WriteLine("This tool will help scaffold a Vite frontend and a C# backend.");
 
-        string csharp = AnsiConsole.Ask<string>("What's the [green]C#[/] project name?");
-        string vite = AnsiConsole.Ask<string>("What's the [blue]Vite[/] project name?");
+        string csharp = AnsiConsole.Ask<string>($"What's the [{CSharpColor}]C#[/] project name?");
+        string vite = AnsiConsole.Ask<string>($"What's the [{ViteColor}]Vite[/] project name?");
         Console.WriteLine();
 
-        AnsiConsole.MarkupLine($"Scaffolding projects in [green]/{csharp}[/] and [blue]/{vite}[/]. Is this okay?");
-        AnsiConsole.MarkupLine("Press [red]Esc[/] to stop, [slateblue1]any other key[/] to continue.");
+        AnsiConsole.MarkupLine($"Scaffolding projects in [{CSharpColor}]/{csharp}[/] and [{ViteColor}]/{vite}[/]. Is this okay?");
+        AnsiConsole.MarkupLine($"Press [{RedColor}]Esc[/] to stop, [{HighlightColor}]any other key[/] to continue.");
 
         ConsoleKeyInfo key = Console.ReadKey();
         if (key.Key == ConsoleKey.Escape) {
@@ -38,15 +44,14 @@ public static class StaticFuncs {
     public static void InitializeVite(ProjectConfiguration config) {
         Console.Clear();
 
-        AnsiConsole.MarkupLine("Initializing [blue]Vite[/] project.");
+        AnsiConsole.MarkupLine($"Initializing [{ViteColor}]Vite[/] project.");
         SelectionPrompt<FrontendPackageManager> p = new();
-        p.Title("Select your [slateblue1]package manager[/].");
+        p.Title($"Select your [{HighlightColor}]package manager[/].");
         p.AddChoices(FrontendPackageManager.Npm, FrontendPackageManager.Pnpm);
         FrontendPackageManager manager = AnsiConsole.Prompt(p);
         config.Manager = manager;
-        AnsiConsole.MarkupLine("[red]Don't install and run now[/]. This will be done later in the process.");
+        AnsiConsole.MarkupLine($"[{RedColor}]Don't install and run now[/]. This will be done later in the process.");
 
-        Run("cd", "./" + config.ViteFolder);
         switch (manager) {
             case FrontendPackageManager.Npm:
                 Run("npm", "create vite@latest ./" + config.ViteFolder, redirectOutput: false);
@@ -55,14 +60,13 @@ public static class StaticFuncs {
                 Run("pnpm", "create vite ./" + config.ViteFolder, redirectOutput: false);
                 break;
         }
-        Run("cd", "..");
     }
 
     public static void InitializeCsharp(ProjectConfiguration config) {
         Console.Clear();
 
-        AnsiConsole.MarkupLine("Initializing [green]CSharp[/] project.");
-        AnsiConsole.MarkupLine("Select your [slateblue1]API type[/].");
+        AnsiConsole.MarkupLine($"Initializing [{CSharpColor}]CSharp[/] project.");
+        AnsiConsole.MarkupLine($"Select your [{HighlightColor}]API type[/].");
         SelectionPrompt<BackendAPIType> p = new();
         p.AddChoices(BackendAPIType.CoreEmpty, BackendAPIType.WebApi, BackendAPIType.ControllerApi);
         BackendAPIType manager = AnsiConsole.Prompt(p);
@@ -88,7 +92,7 @@ public static class StaticFuncs {
             }
         );
 
-        AnsiConsole.MarkupLine("[green]Done![/]");
+        AnsiConsole.MarkupLine($"[{CSharpColor}]Done![/]");
     }
     #endregion
 
