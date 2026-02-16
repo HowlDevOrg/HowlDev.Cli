@@ -1,2 +1,14 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using HowlDev.Cli.FullStackBuilder;
+
+(bool flowControl, ProjectConfiguration config) = StaticFuncs.InitializeFolderNames();
+
+if (!flowControl) {
+    return;
+}
+
+StaticFuncs.MakeDirectories(config);
+
+Console.WriteLine();
+
+// StaticFuncs.InitializeVite(config);
+StaticFuncs.InitializeCsharp(config);
