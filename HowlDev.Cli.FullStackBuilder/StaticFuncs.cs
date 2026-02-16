@@ -39,8 +39,8 @@ public static class StaticFuncs {
         Console.Clear();
 
         AnsiConsole.MarkupLine("Initializing [blue]Vite[/] project.");
-        AnsiConsole.MarkupLine("Select your [slateblue1]package manager[/].");
         SelectionPrompt<FrontendPackageManager> p = new();
+        p.Title("Select your [slateblue1]package manager[/].");
         p.AddChoices(FrontendPackageManager.Npm, FrontendPackageManager.Pnpm);
         FrontendPackageManager manager = AnsiConsole.Prompt(p);
         config.Manager = manager;
@@ -67,9 +67,10 @@ public static class StaticFuncs {
         p.AddChoices(BackendAPIType.CoreEmpty, BackendAPIType.WebApi, BackendAPIType.ControllerApi);
         BackendAPIType manager = AnsiConsole.Prompt(p);
 
-        AnsiConsole.Status().Start(
+        AnsiConsole.Status()
+            .Spinner(Spinner.Known.Star).Start(
             "Building the C# project...", 
-            a => {
+            ctx => {
                 switch (manager) {
                     case BackendAPIType.CoreEmpty:
                         Run("dotnet", "new web -o " + config.CSharpFolder);
@@ -81,6 +82,7 @@ public static class StaticFuncs {
                         Run("dotnet", "new webapi -controllers -o " + config.CSharpFolder);
                         break;
                 }
+                ctx.Status("Adding the C# solution...");
                 Run("dotnet", "new sln", cwd: "./" + config.CSharpFolder);
                 Run("dotnet", "sln add .", cwd: "./" + config.CSharpFolder);
             }
