@@ -72,8 +72,9 @@ public static class StaticFuncs {
         BackendAPIType manager = AnsiConsole.Prompt(p);
 
         AnsiConsole.Status()
-            .Spinner(Spinner.Known.Star).Start(
-            "Building the C# project...", 
+            .Spinner(Spinner.Known.Star)
+            .SpinnerStyle(Style.Parse(CSharpColor)).Start(
+            "Building the C# project...",
             ctx => {
                 switch (manager) {
                     case BackendAPIType.CoreEmpty:
@@ -86,6 +87,7 @@ public static class StaticFuncs {
                         Run("dotnet", "new webapi -controllers -o " + config.CSharpFolder);
                         break;
                 }
+
                 ctx.Status("Adding the C# solution...");
                 Run("dotnet", "new sln", cwd: "./" + config.CSharpFolder);
                 Run("dotnet", "sln add .", cwd: "./" + config.CSharpFolder);
@@ -94,7 +96,50 @@ public static class StaticFuncs {
 
         AnsiConsole.MarkupLine($"[{CSharpColor}]Done![/]");
     }
+
+    public static void InstallFrontendPackages(ProjectConfiguration config) {
+        AnsiConsole.Status()
+            .Spinner(Spinner.Known.Star2)
+            .SpinnerStyle(Style.Parse(ViteColor)).Start(
+            "Installing frontend packages...",
+            ctx => {
+                switch (config.Manager) {
+                    case FrontendPackageManager.Npm:
+                        Run("npm", "i", cwd: "./" + config.ViteFolder);
+                        break;
+                    case FrontendPackageManager.Pnpm:
+                        Run("pnpm", "i", cwd: "./" + config.ViteFolder);
+                        break;
+                }
+            }
+        );
+    }
     #endregion
+    #region Configuration
+    public static void ConfigureFrontend(ProjectConfiguration config) {
+        Console.Clear();
+        List<PackageDefinition> result = AnsiConsole.Prompt(new MultiSelectionPrompt<PackageDefinition>()
+            .Title("Select which packages you'd like to install in the frontend: ")
+            .AddChoices(FrontendOptions.Packages));
+
+        AnsiConsole.Status()
+            .Spinner(Spinner.Known.Star)
+            .SpinnerStyle(Style.Parse(ViteColor)).Start(
+            "Installing frontend packages...",
+            ctx => {
+                switch (config.Manager) {
+                    case FrontendPackageManager.Npm:
+                        Run("npm", "i " + string.Join(' ', result.Select(a => a.InstallString)), cwd: "./" + config.ViteFolder);
+                        break;
+                    case FrontendPackageManager.Pnpm:
+                        Run("pnpm", "i " + string.Join(' ', result.Select(a => a.InstallString)), cwd: "./" + config.ViteFolder);
+                        break;
+                }
+            }
+        );
+    }
+    #endregion
+
 
     private static void Run(string file, string args, string? cwd = null, bool redirectOutput = true) {
         var psi = new ProcessStartInfo {
