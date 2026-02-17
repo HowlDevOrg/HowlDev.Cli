@@ -53,7 +53,7 @@ public static class ConfigToText {
     /// Returns a JS Type file with full exports. 
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string ToTSFile(TextConfigFile file) {
+    public static string ToTSFile(TextConfigFile file, ICrossFileReference reference) {
         if (file.Type != ConfigOptionType.Object) {
             throw new InvalidOperationException("Configuration must be of type Object.");
         }
@@ -62,6 +62,17 @@ public static class ConfigToText {
         bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
         if (ignoreWarnings) {
             output.AppendLine("/* eslint-disable */");
+        }
+
+        if (file["type"].ToString() == "Class") {
+            // Check for imports that we need to include from our properties
+            var fileImports = file["properties"].Items
+                .Where(a => reference.ContainsKey(a["type"].ToString()!))
+                .Select(a => reference.GetReference(a["type"].ToString()!).file);
+
+            foreach (var item in fileImports) {
+                output.AppendLine($"import type {"{"} {item} {"}"} from './{item}.ts';");
+            }
         }
 
         switch (file["type"].ToString()) {

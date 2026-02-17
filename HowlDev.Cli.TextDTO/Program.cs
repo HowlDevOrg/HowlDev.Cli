@@ -44,9 +44,9 @@ class Program {
                 string file = Path.GetFileName(path);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(path);
                 TextConfigFile config = collector.GetFile(file);
-
+                fileLookup.AddKey(config["name"].ToString()!, fileWithoutExtension, config["namespace"].ToString()!);
             }
-            
+
             foreach (string path in collector) {
                 string file = Path.GetFileName(path);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(path);
@@ -57,7 +57,7 @@ class Program {
                         text = ConfigToText.ToCSharpFile(config, fileLookup);
                         break;
                     case "ts":
-                        text = ConfigToText.ToTSFile(config);
+                        text = ConfigToText.ToTSFile(config, fileLookup);
                         break;
                     case "ts-z":
                         text = ConfigToText.ToTSZodFile(config);

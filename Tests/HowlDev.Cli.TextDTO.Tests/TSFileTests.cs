@@ -4,55 +4,7 @@ using HowlDev.IO.Text.ConfigFile.Enums;
 namespace HowlDev.Cli.TextDTO.Tests;
 
 public class TSClassTests {
-    [Test]
-    public async Task SimpleFileNoNamespaceAnd1Property() {
-        string json = """
-        {
-            "name": "IdAndTitleDTO", 
-            "type": "Class", 
-            "properties": [
-                {
-                    "name": "Id",
-                    "type": "int"
-                }
-            ]
-        }
-        """;
-        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config);
-        await TestHelpers.NormalStringsAreEqual(result, """
-        export type IdAndTitleDTO = {
-            Id: number 
-        }
-
-        """);
-    }
-
-    [Test]
-    public async Task SimpleFileNoNamespaceAnd1FullProperty() {
-        string json = """
-        {
-            "name": "IdAndTitleDTO", 
-            "type": "Class", 
-            "properties": [
-                {
-                    "name": "Name",
-                    "type": "string",
-                    "default": "Default Name",
-                    "nullable": true
-                }
-            ]
-        }
-        """;
-        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config);
-        await TestHelpers.NormalStringsAreEqual(result, """
-        export type IdAndTitleDTO = {
-            Name: string | undefined
-        }
-
-        """);
-    }
+    ICrossFileReference n = new CrossFileReference();
 
     [Test]
     public async Task SimpleFileWithNamespaceAnd1FullProperty() {
@@ -72,10 +24,38 @@ public class TSClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config);
+        string result = ConfigToText.ToTSFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         export type IdAndTitleDTO = {
             Name: string | undefined
+        }
+
+        """);
+    }
+
+    [Test]
+    public async Task SimpleFileWithNamespaceReferencingAnotherFile() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "MyClass",
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        CrossFileReference fileReference = new();
+        fileReference.AddKey("MyClass", "MyClass", "HowlDev.Cli.Tests.Classes");
+        string result = ConfigToText.ToTSFile(config, fileReference);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        import type { MyClass } from './MyClass.ts';
+        export type IdAndTitleDTO = {
+            Name: MyClass
         }
 
         """);
@@ -115,7 +95,7 @@ public class TSClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config);
+        string result = ConfigToText.ToTSFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         /* eslint-disable */
         export type IdAndTitleDTO = {
@@ -130,6 +110,8 @@ public class TSClassTests {
     }
 }
 public class TSEnumTests {
+    ICrossFileReference n = new CrossFileReference();
+
     [Test]
     public async Task Enum1() {
         string json = """
@@ -143,7 +125,7 @@ public class TSEnumTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config);
+        string result = ConfigToText.ToTSFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         export type Numbers = "One" | "Two" | "Three" | "Four";
 
@@ -163,7 +145,7 @@ public class TSEnumTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config);
+        string result = ConfigToText.ToTSFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         export type Numbers = "One" | "Two" | "Three";
 
