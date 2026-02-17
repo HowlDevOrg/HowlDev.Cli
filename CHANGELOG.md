@@ -2,12 +2,13 @@
 
 ## Changelog
 
-0.3.1 - 0.3.3 (2/17/26)
+0.3.1 - 0.3.4 (2/17/26)
 
 - Fixed it so Arrays of custom types are now properly created/referenced.
 - Missed a replacement function in the C# builder (0.3.2)
 - I'm _SOOO_ stupid. Zod now does all properties (0.3.3). 
   - Also fixed the default ordering for Zod types.
+- Fixed Null defaults for all types.
 
 0.3.0 (2/16/26)
 

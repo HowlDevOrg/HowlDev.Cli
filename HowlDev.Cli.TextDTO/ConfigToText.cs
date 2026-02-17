@@ -153,10 +153,11 @@ public static class ConfigToText {
 
             string d = "";
             if (option.Contains("default")) {
-                if (type == "string") {
-                    d = '"' + option["default"].ToString() + '"';
+                string opt = option["default"].ToString()!;
+                if (type == "string" && opt != "null") {
+                    d = '"' + opt + '"';
                 } else {
-                    d = option["default"].ToString()!;
+                    d = opt;
                 }
                 d = $" {{ get; set; }} = {d};";
             } else {
@@ -225,11 +226,12 @@ public static class ConfigToText {
                 d += ".array()";
             }
             if (option.Contains("default")) {
-                string local = string.Empty;
-                if (type == "string") {
-                    local = '"' + option["default"].ToString() + '"';
+                string local;
+                string opt = option["default"].ToString()!;
+                if (type == "string" && opt != "null") {
+                    local = '"' + opt + '"';
                 } else {
-                    local = option["default"].ToString()!;
+                    local = opt;
                 }
                 d += $".default({local})";
             }

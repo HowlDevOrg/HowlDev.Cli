@@ -7,7 +7,7 @@ public class TSZodClassTests {
     ICrossFileReference n = new CrossFileReference();
 
     [Test]
-    public async Task SimpleFileWithNamespaceAnd1FullProperty() {
+    public async Task SimpleFileWithNamespaceAnd1FullProperty1() {
         string json = """
         {
             "namespace": "HowlDev.Cli.Tests",
@@ -30,6 +30,36 @@ public class TSZodClassTests {
 
         export const IdAndTitleDTOSchema = z.object({
             Name: z.string().nullable().default("Default"),
+        });
+
+        export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
+
+        """);
+    }
+    [Test]
+    public async Task SimpleFileWithNamespaceAnd1FullProperty2() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "string",
+                    "default": null,
+                    "nullable": true
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSZodFile(config, n);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        import z from "zod"
+
+        export const IdAndTitleDTOSchema = z.object({
+            Name: z.string().nullable().default(null),
         });
 
         export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;

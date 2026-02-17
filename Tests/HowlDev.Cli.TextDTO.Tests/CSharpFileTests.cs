@@ -8,7 +8,7 @@ public class CSharpClassTests {
     ICrossFileReference n = new CrossFileReference();
 
     [Test]
-    public async Task SimpleFileWithNamespaceAnd1FullProperty() {
+    public async Task SimpleFileWithNamespaceAnd1FullProperty1() {
         string json = """
         {
             "namespace": "HowlDev.Cli.Tests",
@@ -31,6 +31,34 @@ public class CSharpClassTests {
         
         public class IdAndTitleDTO {
             public string? Name { get; set; } = "Default Name";
+        }
+
+        """);
+    }
+    [Test]
+    public async Task SimpleFileWithNamespaceAnd1FullProperty2() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "string",
+                    "default": null,
+                    "nullable": true
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToCSharpFile(config, n);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        namespace HowlDev.Cli.Tests;
+        
+        public class IdAndTitleDTO {
+            public string? Name { get; set; } = null;
         }
 
         """);
