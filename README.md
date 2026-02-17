@@ -1,6 +1,6 @@
-# HowlDev.Core
+# HowlDev.Cli
 
-## HowlDev.Core.TextDTO
+## HowlDev.Cli.TextDTO
 
 This is a command-line NuGet package that you can install with:
 
