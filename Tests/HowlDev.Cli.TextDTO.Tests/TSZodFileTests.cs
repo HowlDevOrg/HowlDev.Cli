@@ -17,7 +17,7 @@ public class TSZodClassTests {
                 {
                     "name": "Name",
                     "type": "string",
-                    "default": "Default Name",
+                    "default": "Default",
                     "nullable": true
                 }
             ]
@@ -29,7 +29,7 @@ public class TSZodClassTests {
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
-            Name: z.string().default("Default Name").nullable(),
+            Name: z.string().nullable().default("Default"),
         });
 
         export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
@@ -131,13 +131,12 @@ public class TSZodClassTests {
     }
 
     [Test]
-    public async Task FullFileWithNamespaceAndFullProperties() {
+    public async Task FullFileWithNamespaceAndFullProperties1() {
         string json = """
         {
             "namespace": "ProjectTracker.Classes",
             "name": "IdAndTitleDTO", 
             "type": "Class", 
-            "ignoreWarnings": true,
             "properties": [
                 {
                     "name": "Id",
@@ -166,12 +165,56 @@ public class TSZodClassTests {
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         string result = ConfigToText.ToTSZodFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
-        /* eslint-disable */
         import z from "zod"
 
         export const IdAndTitleDTOSchema = z.object({
             Id: z.number().default(23),
-            Sample: z.string().default("Unknown").nullable(),
+            Sample: z.string().nullable().default("Unknown"),
+            Bool: z.boolean().default(true),
+            Amount: z.number().default(25.1),
+        });
+
+        export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
+
+        """);
+    }
+
+
+    [Test]
+    public async Task FullFileWithNamespaceAndFullProperties2() {
+        string json = """
+        {
+            "namespace": "ProjectTracker.Classes",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "ignoreWarnings": true,
+            "properties": [
+                {
+                    "name": "Id",
+                    "type": "int[]", 
+                    "default": "[]"
+                },
+                {
+                    "name": "Bool",
+                    "type": "bool", 
+                    "default": "true"
+                },
+                {
+                    "name": "Amount",
+                    "type": "double", 
+                    "default": "25.1"
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        string result = ConfigToText.ToTSZodFile(config, n);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        /* eslint-disable */
+        import z from "zod"
+
+        export const IdAndTitleDTOSchema = z.object({
+            Id: z.number().array().default([]),
             Bool: z.boolean().default(true),
             Amount: z.number().default(25.1),
         });

@@ -214,23 +214,24 @@ public static class ConfigToText {
 
             if (reference.ContainsKey(type)) {
                 output.AppendLine($"    {name}: {type}Schema{(isArray ? ".array()" : "")},");
-                break;
+                continue;
             }
 
-            string d = "";
-            if (option.Contains("default")) {
-                if (type == "string") {
-                    d = '"' + option["default"].ToString() + '"';
-                } else {
-                    d = option["default"].ToString()!;
-                }
-                d = $".default({d})";
-            }
+            string d = string.Empty;
             if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
                 d += ".nullable()";
             }
             if (isArray) {
                 d += ".array()";
+            }
+            if (option.Contains("default")) {
+                string local = string.Empty;
+                if (type == "string") {
+                    local = '"' + option["default"].ToString() + '"';
+                } else {
+                    local = option["default"].ToString()!;
+                }
+                d += $".default({local})";
             }
 
             output.AppendLine($"    {name}: z.{ConvertCSharpToJS(type)}(){d},");
