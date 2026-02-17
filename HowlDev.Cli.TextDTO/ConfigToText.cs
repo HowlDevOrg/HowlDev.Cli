@@ -27,9 +27,9 @@ public static class ConfigToText {
         if (file["type"].ToString() == "Class") {
             // Check for namespaces that we need to include from our properties
             var namespaces = file["properties"].Items
-                .Where(a => reference.ContainsKey(a["type"].ToString()!) &&
+                .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")) &&
                     reference.GetReference(a["type"].ToString()!).csharpNamespace != file["namespace"].ToString())
-                .Select(a => reference.GetReference(a["type"].ToString()!).csharpNamespace);
+                .Select(a => reference.GetReference(a["type"].ToString()!.Replace("[]", "")).csharpNamespace);
 
             foreach (var item in namespaces) {
                 output.AppendLine($"using {item};");
@@ -67,11 +67,11 @@ public static class ConfigToText {
         if (file["type"].ToString() == "Class") {
             // Check for imports that we need to include from our properties
             var fileImports = file["properties"].Items
-                .Where(a => reference.ContainsKey(a["type"].ToString()!))
-                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!).file));
+                .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")))
+                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!.Replace("[]", "")).file));
 
             foreach (var item in fileImports) {
-                output.AppendLine($"import type {"{"} {item.Item1} {"}"} from './{item.file}.ts';");
+                output.AppendLine($"import type {"{"} {item.Item1.Replace("[]", "")} {"}"} from './{item.file}.ts';");
             }
         }
 
@@ -108,11 +108,11 @@ public static class ConfigToText {
         if (file["type"].ToString() == "Class") {
             // Check for imports that we need to include from our properties
             var fileImports = file["properties"].Items
-                .Where(a => reference.ContainsKey(a["type"].ToString()!))
-                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!).file));
+                .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")))
+                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!.Replace("[]", "")).file));
 
             foreach (var item in fileImports) {
-                output.AppendLine($"import {"{"} {item.Item1}Schema {"}"} from \"./{item.file}.ts\";");
+                output.AppendLine($"import {"{"} {item.Item1.Replace("[]", "")}Schema {"}"} from \"./{item.file}.ts\";");
             }
         }
 
@@ -213,7 +213,7 @@ public static class ConfigToText {
             type = type.Replace("[]", "");
 
             if (reference.ContainsKey(type)) {
-                output.AppendLine($"    {name}: {type}Schema,");
+                output.AppendLine($"    {name}: {type}Schema{(isArray ? ".array()" : "")},");
                 break;
             }
 

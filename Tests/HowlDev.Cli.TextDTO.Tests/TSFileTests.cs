@@ -62,6 +62,34 @@ public class TSClassTests {
     }
 
     [Test]
+    public async Task SimpleFileWithArrayAndNamespaceReferencingAnotherFile() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "MyClass[]",
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        CrossFileReference fileReference = new();
+        fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
+        string result = ConfigToText.ToTSFile(config, fileReference);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        import type { MyClass } from './ClassFile.ts';
+        export type IdAndTitleDTO = {
+            Name: MyClass[]
+        }
+
+        """);
+    }
+
+    [Test]
     public async Task FullFileWithNamespaceAndFullProperties() {
         string json = """
         {

@@ -2,6 +2,11 @@
 
 ## Changelog
 
+0.3.1 (2/17/26)
+
+- Fixed it so Arrays of custom types are now properly created/referenced.
+- unable to remember how to test locally, so here we go!
+
 0.3.0 (2/16/26)
 
 - Updated system to automatically handle cross references, so you can make nested types (at least I hope). 

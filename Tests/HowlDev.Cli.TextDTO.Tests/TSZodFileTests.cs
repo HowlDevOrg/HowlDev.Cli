@@ -99,6 +99,38 @@ public class TSZodClassTests {
     }
 
     [Test]
+    public async Task SimpleFileWithArrayAndNamespaceReferencingAnotherFile() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "MyClass[]",
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        CrossFileReference fileReference = new();
+        fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
+        string result = ConfigToText.ToTSZodFile(config, fileReference);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        import { MyClassSchema } from "./ClassFile.ts";
+        import z from "zod"
+
+        export const IdAndTitleDTOSchema = z.object({
+            Name: MyClassSchema.array(),
+        });
+
+        export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
+
+        """);
+    }
+
+    [Test]
     public async Task FullFileWithNamespaceAndFullProperties() {
         string json = """
         {
