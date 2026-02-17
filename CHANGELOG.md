@@ -2,10 +2,10 @@
 
 ## Changelog
 
-0.3.1 (2/17/26)
+0.3.1 - 0.3.2 (2/17/26)
 
 - Fixed it so Arrays of custom types are now properly created/referenced.
-- unable to remember how to test locally, so here we go!
+- Missed a replacement function in the C# builder (0.3.2)
 
 0.3.0 (2/16/26)
 

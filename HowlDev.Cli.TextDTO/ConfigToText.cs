@@ -28,7 +28,7 @@ public static class ConfigToText {
             // Check for namespaces that we need to include from our properties
             var namespaces = file["properties"].Items
                 .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")) &&
-                    reference.GetReference(a["type"].ToString()!).csharpNamespace != file["namespace"].ToString())
+                    reference.GetReference(a["type"].ToString()!.Replace("[]", "")).csharpNamespace != file["namespace"].ToString())
                 .Select(a => reference.GetReference(a["type"].ToString()!.Replace("[]", "")).csharpNamespace);
 
             foreach (var item in namespaces) {
