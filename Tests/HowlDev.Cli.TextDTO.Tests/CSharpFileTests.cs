@@ -53,7 +53,7 @@ public class CSharpClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         CrossFileReference fileReference = new();
-        fileReference.AddKey("MyClass", "MyClass", "HowlDev.Cli.Tests.Classes");
+        fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
         string result = ConfigToText.ToCSharpFile(config, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
         using HowlDev.Cli.Tests.Classes;

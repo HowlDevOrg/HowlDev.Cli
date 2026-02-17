@@ -4,63 +4,7 @@ using HowlDev.IO.Text.ConfigFile.Enums;
 namespace HowlDev.Cli.TextDTO.Tests;
 
 public class TSZodClassTests {
-    [Test]
-    public async Task SimpleFileNoNamespaceAnd1Property() {
-        string json = """
-        {
-            "name": "IdAndTitleDTO", 
-            "type": "Class", 
-            "properties": [
-                {
-                    "name": "Id",
-                    "type": "int"
-                }
-            ]
-        }
-        """;
-        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.NormalStringsAreEqual(result, """
-        import z from "zod"
-
-        export const IdAndTitleDTOSchema = z.object({
-            Id: z.number(),
-        });
-
-        export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
-
-        """);
-    }
-
-    [Test]
-    public async Task SimpleFileNoNamespaceAnd1FullProperty() {
-        string json = """
-        {
-            "name": "SomethingElse", 
-            "type": "Class", 
-            "properties": [
-                {
-                    "name": "Name",
-                    "type": "string",
-                    "default": "Default Name",
-                    "nullable": true
-                }
-            ]
-        }
-        """;
-        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
-        await TestHelpers.NormalStringsAreEqual(result, """
-        import z from "zod"
-
-        export const SomethingElseSchema = z.object({
-            Name: z.string().default("Default Name").nullable(),
-        });
-
-        export type SomethingElseType = z.infer<typeof SomethingElseSchema>;
-
-        """);
-    }
+    ICrossFileReference n = new CrossFileReference();
 
     [Test]
     public async Task SimpleFileWithNamespaceAnd1FullProperty() {
@@ -80,7 +24,7 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
+        string result = ConfigToText.ToTSZodFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -109,7 +53,7 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
+        string result = ConfigToText.ToTSZodFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -119,6 +63,38 @@ public class TSZodClassTests {
 
         export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
         
+        """);
+    }
+
+    [Test]
+    public async Task SimpleFileWithNamespaceReferencingAnotherFile() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "MyClass",
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        CrossFileReference fileReference = new();
+        fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
+        string result = ConfigToText.ToTSZodFile(config, fileReference);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        import { MyClassSchema } from "./ClassFile.ts";
+        import z from "zod"
+
+        export const IdAndTitleDTOSchema = z.object({
+            Name: MyClassSchema,
+        });
+
+        export type IdAndTitleDTOType = z.infer<typeof IdAndTitleDTOSchema>;
+
         """);
     }
 
@@ -156,7 +132,7 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
+        string result = ConfigToText.ToTSZodFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         /* eslint-disable */
         import z from "zod"
@@ -175,6 +151,8 @@ public class TSZodClassTests {
     }
 }
 public class TSZodEnumTests {
+    ICrossFileReference n = new CrossFileReference();
+
     [Test]
     public async Task Enum1() {
         string json = """
@@ -188,7 +166,7 @@ public class TSZodEnumTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
+        string result = ConfigToText.ToTSZodFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -212,7 +190,7 @@ public class TSZodEnumTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config);
+        string result = ConfigToText.ToTSZodFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 

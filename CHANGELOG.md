@@ -2,6 +2,10 @@
 
 ## Changelog
 
+0.3.0 (2/16/26)
+
+- Updated system to automatically handle cross references, so you can make nested types (at least I hope). 
+
 0.2.1 (2/6/26)
 
 - Updated internal HowlDev.IO.Text.ConfigFile to handle some edge cases better in JSON. 

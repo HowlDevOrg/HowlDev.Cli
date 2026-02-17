@@ -68,10 +68,10 @@ public static class ConfigToText {
             // Check for imports that we need to include from our properties
             var fileImports = file["properties"].Items
                 .Where(a => reference.ContainsKey(a["type"].ToString()!))
-                .Select(a => reference.GetReference(a["type"].ToString()!).file);
+                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!).file));
 
             foreach (var item in fileImports) {
-                output.AppendLine($"import type {"{"} {item} {"}"} from './{item}.ts';");
+                output.AppendLine($"import type {"{"} {item.Item1} {"}"} from './{item.file}.ts';");
             }
         }
 
@@ -94,7 +94,7 @@ public static class ConfigToText {
     /// Returns a JS Zod file with the zod import and one-level objects. 
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string ToTSZodFile(TextConfigFile file) {
+    public static string ToTSZodFile(TextConfigFile file, ICrossFileReference reference) {
         if (file.Type != ConfigOptionType.Object) {
             throw new InvalidOperationException("Configuration must be of type Object.");
         }
@@ -105,11 +105,22 @@ public static class ConfigToText {
             output.AppendLine("/* eslint-disable */");
         }
 
+        if (file["type"].ToString() == "Class") {
+            // Check for imports that we need to include from our properties
+            var fileImports = file["properties"].Items
+                .Where(a => reference.ContainsKey(a["type"].ToString()!))
+                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!).file));
+
+            foreach (var item in fileImports) {
+                output.AppendLine($"import {"{"} {item.Item1}Schema {"}"} from \"./{item.file}.ts\";");
+            }
+        }
+
         output.AppendLine("import z from \"zod\"").AppendLine();
 
         switch (file["type"].ToString()) {
             case "Class":
-                ZodClassBuilder(file, output);
+                ZodClassBuilder(file, output, reference);
                 break;
             case "Enum":
                 ZodEnumBuilder(file, output);
@@ -193,13 +204,18 @@ public static class ConfigToText {
             + "\";");
     }
 
-    private static void ZodClassBuilder(TextConfigFile file, StringBuilder output) {
+    private static void ZodClassBuilder(TextConfigFile file, StringBuilder output, ICrossFileReference reference) {
         output.AppendLine($"export const {file["name"]}Schema = z.object({{");
         foreach (var option in file["properties"].Items) {
             string name = option["name"].ToString()!;
             string type = option["type"].ToString()!;
             bool isArray = type.Contains("[]");
             type = type.Replace("[]", "");
+
+            if (reference.ContainsKey(type)) {
+                output.AppendLine($"    {name}: {type}Schema,");
+                break;
+            }
 
             string d = "";
             if (option.Contains("default")) {

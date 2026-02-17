@@ -50,10 +50,10 @@ public class TSClassTests {
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         CrossFileReference fileReference = new();
-        fileReference.AddKey("MyClass", "MyClass", "HowlDev.Cli.Tests.Classes");
+        fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
         string result = ConfigToText.ToTSFile(config, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
-        import type { MyClass } from './MyClass.ts';
+        import type { MyClass } from './ClassFile.ts';
         export type IdAndTitleDTO = {
             Name: MyClass
         }

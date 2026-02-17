@@ -60,7 +60,7 @@ class Program {
                         text = ConfigToText.ToTSFile(config, fileLookup);
                         break;
                     case "ts-z":
-                        text = ConfigToText.ToTSZodFile(config);
+                        text = ConfigToText.ToTSZodFile(config, fileLookup);
                         break;
                 }
                 string newPath = outputFolder + "/" + fileWithoutExtension + "." + type.Split('-')[0];
