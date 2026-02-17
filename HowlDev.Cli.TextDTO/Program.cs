@@ -38,6 +38,15 @@ class Program {
 
             Directory.CreateDirectory(outputFolder);
 
+            CrossFileReference fileLookup = new();
+
+            foreach (string path in collector) {
+                string file = Path.GetFileName(path);
+                string fileWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                TextConfigFile config = collector.GetFile(file);
+
+            }
+            
             foreach (string path in collector) {
                 string file = Path.GetFileName(path);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(path);
@@ -45,7 +54,7 @@ class Program {
                 string text = string.Empty;
                 switch (type) {
                     case "cs":
-                        text = ConfigToText.ToCSharpFile(config);
+                        text = ConfigToText.ToCSharpFile(config, fileLookup);
                         break;
                     case "ts":
                         text = ConfigToText.ToTSFile(config);

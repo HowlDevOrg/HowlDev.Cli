@@ -3,56 +3,9 @@ using HowlDev.IO.Text.ConfigFile.Enums;
 
 namespace HowlDev.Cli.TextDTO.Tests;
 
+
 public class CSharpClassTests {
-    [Test]
-    public async Task SimpleFileNoNamespaceAnd1Property() {
-        string json = """
-        {
-            "name": "IdAndTitleDTO", 
-            "type": "Class", 
-            "properties": [
-                {
-                    "name": "Id",
-                    "type": "int"
-                }
-            ]
-        }
-        """;
-        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.NormalStringsAreEqual(result, """
-        public class IdAndTitleDTO {
-            public int Id { get; set; } 
-        }
-
-        """);
-    }
-
-    [Test]
-    public async Task SimpleFileNoNamespaceAnd1FullProperty() {
-        string json = """
-        {
-            "name": "IdAndTitleDTO", 
-            "type": "Class", 
-            "properties": [
-                {
-                    "name": "Name",
-                    "type": "string",
-                    "default": "Default Name",
-                    "nullable": true
-                }
-            ]
-        }
-        """;
-        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config);
-        await TestHelpers.NormalStringsAreEqual(result, """
-        public class IdAndTitleDTO {
-            public string? Name { get; set; } = "Default Name";
-        }
-
-        """);
-    }
+    ICrossFileReference n = new CrossFileReference();
 
     [Test]
     public async Task SimpleFileWithNamespaceAnd1FullProperty() {
@@ -72,12 +25,42 @@ public class CSharpClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config);
+        string result = ConfigToText.ToCSharpFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         
         public class IdAndTitleDTO {
             public string? Name { get; set; } = "Default Name";
+        }
+
+        """);
+    }
+
+    [Test]
+    public async Task SimpleFileWithNamespaceReferencingAnotherFile() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "MyClass",
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        CrossFileReference fileReference = new();
+        fileReference.AddKey("MyClass", "MyClass", "HowlDev.Cli.Tests.Classes");
+        string result = ConfigToText.ToCSharpFile(config, fileReference);
+        await TestHelpers.NormalStringsAreEqual(result, """
+        using HowlDev.Cli.Tests.Classes;
+        namespace HowlDev.Cli.Tests;
+        
+        public class IdAndTitleDTO {
+            public MyClass Name { get; set; }
         }
 
         """);
@@ -121,7 +104,7 @@ public class CSharpClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config);
+        string result = ConfigToText.ToCSharpFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         #pragma warning disable
         namespace ProjectTracker.Classes;
@@ -138,10 +121,13 @@ public class CSharpClassTests {
     }
 }
 public class CSharpEnumTests {
+    ICrossFileReference n = new CrossFileReference();
+
     [Test]
     public async Task Enum1() {
         string json = """
         {
+            "namespace": "ProjectTracker.Classes",
             "name": "Numbers", 
             "type": "Enum", 
             "properties": [
@@ -151,8 +137,10 @@ public class CSharpEnumTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config);
+        string result = ConfigToText.ToCSharpFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
+        namespace ProjectTracker.Classes;
+
         public enum Numbers {
             One,
             Two,
@@ -176,7 +164,7 @@ public class CSharpEnumTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config);
+        string result = ConfigToText.ToCSharpFile(config, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         

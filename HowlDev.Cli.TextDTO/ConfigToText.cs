@@ -12,7 +12,7 @@ public static class ConfigToText {
     /// To a standard C# DTO file.
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string ToCSharpFile(TextConfigFile file) {
+    public static string ToCSharpFile(TextConfigFile file, ICrossFileReference reference) {
         if (file.Type != ConfigOptionType.Object) {
             throw new InvalidOperationException("Configuration must be of type Object.");
         }
@@ -24,9 +24,19 @@ public static class ConfigToText {
             output.AppendLine("#pragma warning disable");
         }
 
-        if (file.Contains("namespace")) {
-            output.AppendLine($"namespace {file["namespace"]};").AppendLine();
+        if (file["type"].ToString() == "Class") {
+            // Check for namespaces that we need to include from our properties
+            var namespaces = file["properties"].Items
+                .Where(a => reference.ContainsKey(a["type"].ToString()!) &&
+                    reference.GetReference(a["type"].ToString()!).csharpNamespace != file["namespace"].ToString())
+                .Select(a => reference.GetReference(a["type"].ToString()!).csharpNamespace);
+
+            foreach (var item in namespaces) {
+                output.AppendLine($"using {item};");
+            }
         }
+
+        output.AppendLine($"namespace {file["namespace"]};").AppendLine();
 
         switch (file["type"].ToString()) {
             case "Class":
