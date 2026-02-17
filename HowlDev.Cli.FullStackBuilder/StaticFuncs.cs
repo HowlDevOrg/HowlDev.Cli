@@ -2,7 +2,7 @@ using Spectre.Console;
 using System.Diagnostics;
 
 namespace HowlDev.Cli.FullStackBuilder;
-
+#pragma warning disable CS1591 
 public static class StaticFuncs {
     // Color constants
     public const string ViteColor = "blue";
@@ -141,20 +141,34 @@ public static class StaticFuncs {
 
     public static void ConfigureFrontendFiles(ProjectConfiguration config) {
         RefreshScreen("Configuring Frontend", ViteColor);
-        
+
         bool flowControl = AnsiConsole.Confirm($"Would you like a function that helps make [{HighlightColor}]HTTP calls[/]?");
+        bool useTypeScript = DetectTypeScript(config.ViteFolder);
         if (flowControl) {
-            bool useTypeScript = DetectTypeScript(config.ViteFolder);
             string extension = useTypeScript ? "ts" : "js";
             string templateName = $"fetchHelpers.{extension}";
             string resourceName = $"HowlDev.Cli.FullStackBuilder.TemplateFiles.frontendAPI.{templateName}";
 
-            AnsiConsole.MarkupLine($"Detected {(useTypeScript ? "[blue]TypeScript[/]" : "[yellow]JavaScript[/]")} project");
+            AnsiConsole.MarkupLine($"Detected {(useTypeScript ? "[blue]TypeScript[/]" : "[yellow]JavaScript[/]")} project.");
 
             CopyEmbeddedResourceToFile(resourceName, Path.Combine(config.ViteFolder, "src", "api", templateName));
         }
 
-        flowControl = AnsiConsole.Confirm($"Would you like ");
+        flowControl = AnsiConsole.Confirm($"Would you like to build the output directly into the API?", false);
+        if (flowControl) {
+            string viteFile = Path.Combine(config.ViteFolder, $"vite.config.{(useTypeScript ? "ts" : "js")}");
+            string[] file = File.ReadAllLines(viteFile);
+            List<string> newFile = [];
+
+            foreach (string line in file) {
+                newFile.Add(line);
+                if (line.TrimEnd().EndsWith(',')) {
+                    newFile.AddRange(FrontendStrings.Build(config.CSharpFolder).Split('\n'));
+                }
+            }
+
+            File.WriteAllLines(viteFile, newFile);
+        }
     }
 
     public static void ConfigureBackend(ProjectConfiguration config) {
@@ -173,6 +187,28 @@ public static class StaticFuncs {
                 }
             }
         );
+    }
+
+    public static void ConfigureBackendFiles(ProjectConfiguration config) {
+        RefreshScreen("Configuring Backend", ViteColor);
+
+        bool flowControl = AnsiConsole.Confirm($"Would you like to set up a [{HighlightColor}]Postgres[/] connection string?"); 
+        if (flowControl) {
+            config.DatabaseName = AnsiConsole.Ask<string>("What would you like to name your database?");
+            string appSettings = Path.Combine(config.CSharpFolder, "appsettings.json");
+            string[] file = File.ReadAllLines(appSettings);
+            List<string> newFile = [];
+
+            foreach (string line in file) {
+                if (line.Contains("AllowedHosts")) {
+                    newFile.Add(line + ",");
+                    newFile.AddRange(BackendStrings.PGConnectionString(config.DatabaseName).Split('\n'));
+                } else {
+                    newFile.Add(line);
+                }
+            }
+            File.WriteAllLines(appSettings, newFile);
+        }
     }
     #endregion
 
@@ -206,11 +242,7 @@ public static class StaticFuncs {
     private static void CopyEmbeddedResourceToFile(string resourceName, string destinationPath) {
         var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
-        using var stream = assembly.GetManifestResourceStream(resourceName);
-        if (stream == null) {
-            throw new InvalidOperationException($"Embedded resource '{resourceName}' not found.");
-        }
-
+        using var stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Embedded resource '{resourceName}' not found.");
         string? destinationDir = Path.GetDirectoryName(destinationPath);
         if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir)) {
             Directory.CreateDirectory(destinationDir);

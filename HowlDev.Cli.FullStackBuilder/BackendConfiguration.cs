@@ -1,5 +1,6 @@
 namespace HowlDev.Cli.FullStackBuilder;
 
+#pragma warning disable CS1591 
 public enum BackendAPIType {
     CoreEmpty,
     WebApi,

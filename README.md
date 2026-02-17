@@ -75,28 +75,22 @@ The current list of types supported are C# primitives. They are all converted to
 
 Arrays are not yet supported. 
 
-## Changelog
+## HowlDev.Cli.FullStackBuilder
 
-0.2.1 (2/6/26)
+This is a global tool that combines the Vite and Dotnet builder to quickly bootstrap full-stack apps. Install it with the below command: 
 
-- Updated internal HowlDev.IO.Text.ConfigFile to handle some edge cases better in JSON. 
+```bash
+dotnet tool install --global HowlDev.Cli.FullStackBuilder
+```
 
-0.2 (2/3/26)
+Run the command with: 
 
-- BREAKING CHANGE
-  - Files now need the "type" parameter in the top level of the object. This can only be a Class or Enum (currently).
-- New feature: Enums! Enums are proper Enum types in C#, type unions in JS (`type Thing = "one" | "two"`), and proper enums in Zod. 
-- More resilient tests (that I probably should have considered a while ago). 
+```bash
+fsbuild
+```
 
-0.1.2 (2/3/26)
+Provide it with file names for your two projects, then follow the steps in the console to scaffold your Vite project and your backend (do _not_ install and build the frontend at the last step. I didn't find a flag to disable that feature, but it will break this app). 
 
-- Added Zod support for the array type
+After that, it will ask if you want to configure more. In both projects, you can install some common packages (make an issue/pull request if you have more packages you'd like), and also adjust some files with common features, such as building your frontend directly to your API. 
 
-0.1.1 (1/8/26)
-
-- Found out about the RollForward property for applications, so now you don't have to specifically have the 8.0 runtime to run this app. 
-
-0.1.0 (1/8/26)
-
-- Initialized
-- Only primitives are really supported. No type checking happens. 
+This is very much in it's early stages. 

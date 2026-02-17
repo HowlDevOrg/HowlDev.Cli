@@ -38,4 +38,5 @@ StaticFuncs.RefreshScreen("Configuring Backend", StaticFuncs.CSharpColor);
 flowControl = AnsiConsole.Confirm("Would you like to configure the backend? \nYou can install packages, set up environment variables, and initialize Program.cs.");
 if (flowControl) {
     StaticFuncs.ConfigureBackend(config);
+    StaticFuncs.ConfigureBackendFiles(config);
 }
