@@ -219,16 +219,16 @@ public static class ConfigToText {
             }
 
             string d = string.Empty;
-            if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
-                d += ".nullable()";
-            }
             if (isArray) {
                 d += ".array()";
+            }
+            if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
+                d += ".nullable()";
             }
             if (option.Contains("default")) {
                 string local;
                 string opt = option["default"].ToString()!;
-                if (type == "string" && opt != "null") {
+                if (type == "string" && opt != "null" && !isArray) {
                     local = '"' + opt + '"';
                 } else {
                     local = opt;
