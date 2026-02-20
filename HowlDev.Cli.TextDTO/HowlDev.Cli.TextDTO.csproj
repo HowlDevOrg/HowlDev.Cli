@@ -33,7 +33,7 @@
 
 
 	<ItemGroup>
-	  <PackageReference Include="HowlDev.IO.Text.ConfigFile" Version="3.2.0" />
+	  <PackageReference Include="HowlDev.IO.Text.ConfigFile" Version="3.3.0" />
 	  <PackageReference Include="System.CommandLine" Version="2.0.2" />
 	</ItemGroup>
 
