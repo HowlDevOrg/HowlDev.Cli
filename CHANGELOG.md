@@ -2,6 +2,10 @@
 
 ## Changelog
 
+0.4.0-beta (2/20/26)
+
+- Updated the underlying system to create a strongly-typed object before creating objects. I'm transitioning towards a separate code generation library, and this is the first step for. (This required an update to the ConfigFileLibrary). 
+
 0.3.1 - 0.3.5 (2/17/26)
 
 - Fixed it so Arrays of custom types are now properly created/referenced.

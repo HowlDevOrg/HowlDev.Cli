@@ -25,7 +25,8 @@ public class CSharpClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToCSharpFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         
@@ -53,7 +54,8 @@ public class CSharpClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToCSharpFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         
@@ -80,9 +82,10 @@ public class CSharpClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        DTODefinition def = config.As<DTODefinition>();
         CrossFileReference fileReference = new();
         fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
-        string result = ConfigToText.ToCSharpFile(config, fileReference);
+        string result = ConfigToText.ToCSharpFile(def, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
         using HowlDev.Cli.Tests.Classes;
         namespace HowlDev.Cli.Tests;
@@ -132,7 +135,8 @@ public class CSharpClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToCSharpFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         #pragma warning disable
         namespace ProjectTracker.Classes;
@@ -158,14 +162,15 @@ public class CSharpEnumTests {
             "namespace": "ProjectTracker.Classes",
             "name": "Numbers", 
             "type": "Enum", 
-            "properties": [
+            "enumValues": [
                 "One", "Two", "Three", 
                 "Four"
             ]
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToCSharpFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         namespace ProjectTracker.Classes;
 
@@ -186,13 +191,14 @@ public class CSharpEnumTests {
             "name": "Numbers", 
             "namespace": "HowlDev.Cli.Tests", 
             "type": "Enum", 
-            "properties": [
+            "enumValues": [
                 "One", "Two", "Three"
             ]
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToCSharpFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToCSharpFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         namespace HowlDev.Cli.Tests;
         

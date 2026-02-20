@@ -24,7 +24,8 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -54,7 +55,8 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -83,7 +85,8 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -114,7 +117,8 @@ public class TSZodClassTests {
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         CrossFileReference fileReference = new();
         fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
-        string result = ConfigToText.ToTSZodFile(config, fileReference);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
         import { MyClassSchema } from "./ClassFile.ts";
         import z from "zod"
@@ -146,7 +150,8 @@ public class TSZodClassTests {
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
         CrossFileReference fileReference = new();
         fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
-        string result = ConfigToText.ToTSZodFile(config, fileReference);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
         import { MyClassSchema } from "./ClassFile.ts";
         import z from "zod"
@@ -193,7 +198,8 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -238,7 +244,8 @@ public class TSZodClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         /* eslint-disable */
         import z from "zod"
@@ -264,14 +271,15 @@ public class TSZodEnumTests {
         {
             "name": "Numbers", 
             "type": "Enum", 
-            "properties": [
+            "enumValues": [
                 "One", "Two", "Three", 
                 "Four"
             ]
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 
@@ -289,13 +297,14 @@ public class TSZodEnumTests {
             "name": "Numbers", 
             "namespace": "HowlDev.Cli.Tests", 
             "type": "Enum", 
-            "properties": [
+            "enumValues": [
                 "One", "Two", "Three"
             ]
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSZodFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSZodFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         import z from "zod"
 

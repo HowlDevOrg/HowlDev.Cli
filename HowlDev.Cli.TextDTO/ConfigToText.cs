@@ -1,5 +1,3 @@
-using HowlDev.IO.Text.ConfigFile;
-using HowlDev.IO.Text.ConfigFile.Enums;
 using System.Text;
 
 namespace HowlDev.Cli.TextDTO;
@@ -12,38 +10,33 @@ public static class ConfigToText {
     /// To a standard C# DTO file.
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string ToCSharpFile(TextConfigFile file, ICrossFileReference reference) {
-        if (file.Type != ConfigOptionType.Object) {
-            throw new InvalidOperationException("Configuration must be of type Object.");
-        }
-
+    public static string ToCSharpFile(DTODefinition def, ICrossFileReference reference) {
         var output = new StringBuilder();
 
-        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
-        if (ignoreWarnings) {
+        if (def.IgnoreWarnings) {
             output.AppendLine("#pragma warning disable");
         }
 
-        if (file["type"].ToString() == "Class") {
+        if (def.Type == "Class") {
             // Check for namespaces that we need to include from our properties
-            var namespaces = file["properties"].Items
-                .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")) &&
-                    reference.GetReference(a["type"].ToString()!.Replace("[]", "")).csharpNamespace != file["namespace"].ToString())
-                .Select(a => reference.GetReference(a["type"].ToString()!.Replace("[]", "")).csharpNamespace);
+            var namespaces = def.Properties
+                .Where(a => reference.ContainsKey(a.Type.Replace("[]", "")) &&
+                    reference.GetReference(a.Type.Replace("[]", "")).csharpNamespace != def.Namespace)
+                .Select(a => reference.GetReference(a.Type.Replace("[]", "")).csharpNamespace);
 
             foreach (var item in namespaces) {
                 output.AppendLine($"using {item};");
             }
         }
 
-        output.AppendLine($"namespace {file["namespace"]};").AppendLine();
+        output.AppendLine($"namespace {def.Namespace};").AppendLine();
 
-        switch (file["type"].ToString()) {
+        switch (def.Type) {
             case "Class":
-                CSharpClassBuilder(file, output);
+                CSharpClassBuilder(def, output);
                 break;
             case "Enum":
-                CSharpEnumBuilder(file, output);
+                CSharpEnumBuilder(def, output);
                 break;
         }
         return output.ToString();
@@ -53,38 +46,34 @@ public static class ConfigToText {
     /// Returns a JS Type file with full exports. 
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string ToTSFile(TextConfigFile file, ICrossFileReference reference) {
-        if (file.Type != ConfigOptionType.Object) {
-            throw new InvalidOperationException("Configuration must be of type Object.");
-        }
+    public static string ToTSFile(DTODefinition def, ICrossFileReference reference) {
         var output = new StringBuilder();
 
-        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
-        if (ignoreWarnings) {
+        if (def.IgnoreWarnings) {
             output.AppendLine("/* eslint-disable */");
         }
 
-        if (file["type"].ToString() == "Class") {
+        if (def.Type == "Class") {
             // Check for imports that we need to include from our properties
-            var fileImports = file["properties"].Items
-                .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")))
-                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!.Replace("[]", "")).file));
+            var fileImports = def.Properties
+                .Where(a => reference.ContainsKey(a.Type.Replace("[]", "")))
+                .Select(a => (a.Type, reference.GetReference(a.Type.Replace("[]", "")).file));
 
             foreach (var item in fileImports) {
-                output.AppendLine($"import type {"{"} {item.Item1.Replace("[]", "")} {"}"} from './{item.file}.ts';");
+                output.AppendLine($"import type {"{"} {item.Type.Replace("[]", "")} {"}"} from './{item.file}.ts';");
             }
         }
 
-        switch (file["type"].ToString()) {
+        switch (def.Type) {
             case "Class":
-                JSClassBuilder(file, output);
+                JSClassBuilder(def, output);
                 break;
             case "Enum":
-                JSEnumBuilder(file, output);
+                JSEnumBuilder(def, output);
                 break;
         }
 
-        if (ignoreWarnings) {
+        if (def.IgnoreWarnings) {
             output.AppendLine("/* eslint-enable */");
         }
         return output.ToString();
@@ -94,40 +83,36 @@ public static class ConfigToText {
     /// Returns a JS Zod file with the zod import and one-level objects. 
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static string ToTSZodFile(TextConfigFile file, ICrossFileReference reference) {
-        if (file.Type != ConfigOptionType.Object) {
-            throw new InvalidOperationException("Configuration must be of type Object.");
-        }
+    public static string ToTSZodFile(DTODefinition def, ICrossFileReference reference) {
         var output = new StringBuilder();
 
-        bool ignoreWarnings = file.Contains("ignoreWarnings") && file["ignoreWarnings"].ToBoolean(null);
-        if (ignoreWarnings) {
+        if (def.IgnoreWarnings) {
             output.AppendLine("/* eslint-disable */");
         }
 
-        if (file["type"].ToString() == "Class") {
+        if (def.Type == "Class") {
             // Check for imports that we need to include from our properties
-            var fileImports = file["properties"].Items
-                .Where(a => reference.ContainsKey(a["type"].ToString()!.Replace("[]", "")))
-                .Select(a => (a["type"].ToString()!, reference.GetReference(a["type"].ToString()!.Replace("[]", "")).file));
+            var fileImports = def.Properties
+                .Where(a => reference.ContainsKey(a.Type.Replace("[]", "")))
+                .Select(a => (a.Type, reference.GetReference(a.Type.Replace("[]", "")).file));
 
             foreach (var item in fileImports) {
-                output.AppendLine($"import {"{"} {item.Item1.Replace("[]", "")}Schema {"}"} from \"./{item.file}.ts\";");
+                output.AppendLine($"import {"{"} {item.Type.Replace("[]", "")}Schema {"}"} from \"./{item.file}.ts\";");
             }
         }
 
         output.AppendLine("import z from \"zod\"").AppendLine();
 
-        switch (file["type"].ToString()) {
+        switch (def.Type) {
             case "Class":
-                ZodClassBuilder(file, output, reference);
+                ZodClassBuilder(def, output, reference);
                 break;
             case "Enum":
-                ZodEnumBuilder(file, output);
+                ZodEnumBuilder(def, output);
                 break;
         }
 
-        if (ignoreWarnings) {
+        if (def.IgnoreWarnings) {
             output.AppendLine("/* eslint-enable */");
         }
         return output.ToString();
@@ -145,15 +130,15 @@ public static class ConfigToText {
         };
     }
 
-    private static void CSharpClassBuilder(TextConfigFile file, StringBuilder output) {
-        output.AppendLine($"public class {file["name"]} {{");
-        foreach (var option in file["properties"].Items) {
-            string name = option["name"].ToString()!;
-            string type = option["type"].ToString()!;
+    private static void CSharpClassBuilder(DTODefinition def, StringBuilder output) {
+        output.AppendLine($"public class {def.Name} {{");
+        foreach (var option in def.Properties) {
+            string name = option.Name;
+            string type = option.Type;
 
             string d = "";
-            if (option.Contains("default")) {
-                string opt = option["default"].ToString()!;
+            if (option.Default != null) {
+                string opt = option.Default;
                 if (type == "string" && opt != "null") {
                     d = '"' + opt + '"';
                 } else {
@@ -164,7 +149,7 @@ public static class ConfigToText {
                 d = " { get; set; } ";
             }
 
-            if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
+            if (option.Nullable) {
                 type += "?";
             }
 
@@ -174,21 +159,21 @@ public static class ConfigToText {
         output.AppendLine("}");
     }
 
-    private static void CSharpEnumBuilder(TextConfigFile file, StringBuilder output) {
-        output.AppendLine($"public enum {file["name"]} {{");
-        output.Append("    " + string.Join(",\n    ", file["properties"].AsEnumerable<string>())).AppendLine();
+    private static void CSharpEnumBuilder(DTODefinition def, StringBuilder output) {
+        output.AppendLine($"public enum {def.Name} {{");
+        output.Append("    " + string.Join(",\n    ", def.EnumValues)).AppendLine();
         output.AppendLine("}");
     }
 
-    private static void JSClassBuilder(TextConfigFile file, StringBuilder output) {
-        output.AppendLine($"export type {file["name"]} = {{");
-        foreach (var option in file["properties"].Items) {
-            string name = option["name"].ToString()!;
-            string type = option["type"].ToString()!;
+    private static void JSClassBuilder(DTODefinition def, StringBuilder output) {
+        output.AppendLine($"export type {def.Name} = {{");
+        foreach (var option in def.Properties) {
+            string name = option.Name;
+            string type = option.Type;
 
             string nullable = "";
             string trailingSpace = " ";
-            if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
+            if (option.Nullable) {
                 nullable = " | undefined";
                 trailingSpace = "";
             }
@@ -199,17 +184,17 @@ public static class ConfigToText {
         output.AppendLine("}");
     }
 
-    private static void JSEnumBuilder(TextConfigFile file, StringBuilder output) {
-        output.AppendLine($"export type {file["name"]} = \""
-            + string.Join("\" | \"", file["properties"].AsEnumerable<string>())
+    private static void JSEnumBuilder(DTODefinition def, StringBuilder output) {
+        output.AppendLine($"export type {def.Name} = \""
+            + string.Join("\" | \"", def.EnumValues)
             + "\";");
     }
 
-    private static void ZodClassBuilder(TextConfigFile file, StringBuilder output, ICrossFileReference reference) {
-        output.AppendLine($"export const {file["name"]}Schema = z.object({{");
-        foreach (var option in file["properties"].Items) {
-            string name = option["name"].ToString()!;
-            string type = option["type"].ToString()!;
+    private static void ZodClassBuilder(DTODefinition def, StringBuilder output, ICrossFileReference reference) {
+        output.AppendLine($"export const {def.Name}Schema = z.object({{");
+        foreach (var option in def.Properties) {
+            string name = option.Name;
+            string type = option.Type;
             bool isArray = type.Contains("[]");
             type = type.Replace("[]", "");
 
@@ -222,12 +207,12 @@ public static class ConfigToText {
             if (isArray) {
                 d += ".array()";
             }
-            if (option.Contains("nullable") && option["nullable"].ToBoolean(null)) {
+            if (option.Nullable) {
                 d += ".nullable()";
             }
-            if (option.Contains("default")) {
+            if (option.Default != null) {
                 string local;
-                string opt = option["default"].ToString()!;
+                string opt = option.Default;
                 if (type == "string" && opt != "null" && !isArray) {
                     local = '"' + opt + '"';
                 } else {
@@ -241,11 +226,11 @@ public static class ConfigToText {
         }
         output.AppendLine("});").AppendLine();
 
-        output.AppendLine($"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;");
+        output.AppendLine($"export type {def.Name}Type = z.infer<typeof {def.Name}Schema>;");
     }
 
-    private static void ZodEnumBuilder(TextConfigFile file, StringBuilder output) {
-        output.AppendLine($"export const {file["name"]}Schema = z.enum([\"{string.Join("\", \"", file["properties"].AsEnumerable<string>())}\"]);").AppendLine();
-        output.AppendLine($"export type {file["name"]}Type = z.infer<typeof {file["name"]}Schema>;").AppendLine();
+    private static void ZodEnumBuilder(DTODefinition def, StringBuilder output) {
+        output.AppendLine($"export const {def.Name}Schema = z.enum([\"{string.Join("\", \"", def.EnumValues)}\"]);" ).AppendLine();
+        output.AppendLine($"export type {def.Name}Type = z.infer<typeof {def.Name}Schema>;").AppendLine();
     }
 }

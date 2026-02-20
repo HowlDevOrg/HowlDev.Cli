@@ -39,28 +39,31 @@ class Program {
             Directory.CreateDirectory(outputFolder);
 
             CrossFileReference fileLookup = new();
+            List<(string path, DTODefinition def)> dTOs = [];
 
             foreach (string path in collector) {
                 string file = Path.GetFileName(path);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(path);
                 TextConfigFile config = collector.GetFile(file);
-                fileLookup.AddKey(config["name"].ToString()!, fileWithoutExtension, config["namespace"].ToString()!);
+                DTODefinition def = config.As<DTODefinition>();
+                fileLookup.AddKey(def.Name, fileWithoutExtension, def.Namespace);
+                dTOs.Add((file, def));
             }
 
             foreach (string path in collector) {
                 string file = Path.GetFileName(path);
                 string fileWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                TextConfigFile config = collector.GetFile(file);
+                DTODefinition def = dTOs.First(a => a.path == file).def;
                 string text = string.Empty;
                 switch (type) {
                     case "cs":
-                        text = ConfigToText.ToCSharpFile(config, fileLookup);
+                        text = ConfigToText.ToCSharpFile(def, fileLookup);
                         break;
                     case "ts":
-                        text = ConfigToText.ToTSFile(config, fileLookup);
+                        text = ConfigToText.ToTSFile(def, fileLookup);
                         break;
                     case "ts-z":
-                        text = ConfigToText.ToTSZodFile(config, fileLookup);
+                        text = ConfigToText.ToTSZodFile(def, fileLookup);
                         break;
                 }
                 string newPath = outputFolder + "/" + fileWithoutExtension + "." + type.Split('-')[0];

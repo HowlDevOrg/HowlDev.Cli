@@ -24,7 +24,8 @@ public class TSClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         export type IdAndTitleDTO = {
             Name: string | undefined
@@ -49,9 +50,10 @@ public class TSClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        DTODefinition def = config.As<DTODefinition>();
         CrossFileReference fileReference = new();
         fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
-        string result = ConfigToText.ToTSFile(config, fileReference);
+        string result = ConfigToText.ToTSFile(def, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
         import type { MyClass } from './ClassFile.ts';
         export type IdAndTitleDTO = {
@@ -77,9 +79,10 @@ public class TSClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        DTODefinition def = config.As<DTODefinition>();
         CrossFileReference fileReference = new();
         fileReference.AddKey("MyClass", "ClassFile", "HowlDev.Cli.Tests.Classes");
-        string result = ConfigToText.ToTSFile(config, fileReference);
+        string result = ConfigToText.ToTSFile(def, fileReference);
         await TestHelpers.NormalStringsAreEqual(result, """
         import type { MyClass } from './ClassFile.ts';
         export type IdAndTitleDTO = {
@@ -123,7 +126,8 @@ public class TSClassTests {
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         /* eslint-disable */
         export type IdAndTitleDTO = {
@@ -146,14 +150,15 @@ public class TSEnumTests {
         {
             "name": "Numbers", 
             "type": "Enum", 
-            "properties": [
+            "enumValues": [
                 "One", "Two", "Three", 
                 "Four"
             ]
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         export type Numbers = "One" | "Two" | "Three" | "Four";
 
@@ -167,13 +172,14 @@ public class TSEnumTests {
             "name": "Numbers", 
             "namespace": "HowlDev.Cli.Tests", 
             "type": "Enum", 
-            "properties": [
+            "enumValues": [
                 "One", "Two", "Three"
             ]
         }
         """;
         TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
-        string result = ConfigToText.ToTSFile(config, n);
+        DTODefinition def = config.As<DTODefinition>();
+        string result = ConfigToText.ToTSFile(def, n);
         await TestHelpers.NormalStringsAreEqual(result, """
         export type Numbers = "One" | "Two" | "Three";
 

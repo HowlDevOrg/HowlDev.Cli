@@ -15,6 +15,35 @@ public class DTODefinitionTests {
                 {
                     "name": "Name",
                     "type": "string",
+                }
+            ]
+        }
+        """;
+        TextConfigFile config = TextConfigFile.ReadTextAs(FileTypes.JSON, json);
+        DTODefinition def = config.As<DTODefinition>();
+        await Assert.That(def.Namespace).IsEqualTo("HowlDev.Cli.Tests");
+        await Assert.That(def.Name).IsEqualTo("IdAndTitleDTO");
+        await Assert.That(def.Type).IsEqualTo("Class");
+        await Assert.That(def.IgnoreWarnings).IsEqualTo(false);
+        await Assert.That(def.Properties.Length).IsEqualTo(1);
+        await Assert.That(def.Properties[0].Name).IsEqualTo("Name");
+        await Assert.That(def.Properties[0].Type).IsEqualTo("string");
+        await Assert.That(def.Properties[0].Default).IsNull();
+        await Assert.That(def.Properties[0].Nullable).IsFalse();
+        await Assert.That(def.EnumValues.Length).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task SlightlyMoreComplicatedAsClass() {
+        string json = """
+        {
+            "namespace": "HowlDev.Cli.Tests",
+            "name": "IdAndTitleDTO", 
+            "type": "Class", 
+            "properties": [
+                {
+                    "name": "Name",
+                    "type": "string",
                     "default": "Default Name",
                     "nullable": true
                 }
