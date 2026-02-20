@@ -48,9 +48,8 @@ Here's the structure:
   "name": "IdAndTitleDTO", // Required
   "type": "Class", // Required (can be either [Class, Enum])
   "namespace": "ProjectTracker.Classes", // Required for C# classes only (only file-scoped is available)
-  "ignoreWarnings": true, // Optional; uses the language-specific disable of warnings
-  "properties": [
-    // If the type is Class
+  "ignoreWarnings": true, // Optional; uses the language-specific disable of warnings (default false)
+  "properties": [ // Only needs to be present in if the type is Class
     {
       "name": "Id", // These two properties are required
       "type": "int",
@@ -58,7 +57,8 @@ Here's the structure:
       "nullable": true // You can make a property optional (optional param)
     },
     ... // Add as many properties here as needed
-    // If the type is Enum
+  ], 
+  "enumValues" : [ // Only needs to be present in if the type is Enum
     "Type1", "Type2", ...
   ]
 }
