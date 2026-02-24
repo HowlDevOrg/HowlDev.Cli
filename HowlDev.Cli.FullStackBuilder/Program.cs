@@ -1,42 +1,57 @@
 ﻿using HowlDev.Cli.FullStackBuilder;
 using Spectre.Console;
 
-StaticFuncs.RefreshScreen("Initialize", StaticFuncs.HighlightColor);
+StaticFuncs.RefreshScreen("Select", StaticFuncs.HighlightColor);
 
-(bool flowControl, ProjectConfiguration config) = StaticFuncs.InitializeFolderNames();
+string result = StaticFuncs.MakeSelection();
 
-if (!flowControl) {
-    return;
-}
+if (result == StaticFuncs.ViteApp) {
+    StaticFuncs.RefreshScreen("Initialize", StaticFuncs.HighlightColor);
 
-StaticFuncs.MakeDirectories(config);
+    (bool flowControl, ViteFrontendProjectConfig config) = ViteCSharpFuncs.InitializeFolderNames();
 
-AnsiConsole.WriteLine();
+    if (!flowControl) {
+        return;
+    }
 
-StaticFuncs.InitializeVite(config);
-StaticFuncs.InitializeCsharp(config);
+    ViteCSharpFuncs.MakeDirectories(config);
 
-StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
-flowControl = AnsiConsole.Confirm("Projects have been initialized. Would you like to further configure your stack?", false);
+    AnsiConsole.WriteLine();
 
-if (!flowControl) {
-    // Install packages before letting the user go
-    StaticFuncs.InstallFrontendPackages(config);
-    return;
-}
+    ViteCSharpFuncs.InitializeVite(config);
+    ViteCSharpFuncs.InitializeCsharp(config);
 
-StaticFuncs.RefreshScreen("Configuring Frontend", StaticFuncs.ViteColor);
+    StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
+    flowControl = AnsiConsole.Confirm("Projects have been initialized. Would you like to further configure your stack?", false);
 
-flowControl = AnsiConsole.Confirm("Would you like to configure the frontend? \nYou can install packages and set up the Vite config file.");
-if (flowControl) {
-    StaticFuncs.ConfigureFrontend(config);
-    StaticFuncs.ConfigureFrontendFiles(config);
-}
+    if (!flowControl) {
+        // Install packages before letting the user go
+        ViteCSharpFuncs.InstallFrontendPackages(config);
+        return;
+    }
 
-StaticFuncs.RefreshScreen("Configuring Backend", StaticFuncs.CSharpColor);
+    StaticFuncs.RefreshScreen("Configuring Frontend", ViteCSharpFuncs.ViteColor);
 
-flowControl = AnsiConsole.Confirm("Would you like to configure the backend? \nYou can install packages, set up environment variables, and initialize Program.cs.");
-if (flowControl) {
-    StaticFuncs.ConfigureBackend(config);
-    StaticFuncs.ConfigureBackendFiles(config);
+    flowControl = AnsiConsole.Confirm("Would you like to configure the frontend? \nYou can install packages and set up the Vite config file.");
+    if (flowControl) {
+        ViteCSharpFuncs.ConfigureFrontend(config);
+        ViteCSharpFuncs.ConfigureFrontendFiles(config);
+    }
+
+    StaticFuncs.RefreshScreen("Configuring Backend", ViteCSharpFuncs.CSharpColor);
+
+    flowControl = AnsiConsole.Confirm("Would you like to configure the backend? \nYou can install packages, set up environment variables, and initialize Program.cs.");
+    if (flowControl) {
+        ViteCSharpFuncs.ConfigureBackend(config);
+        ViteCSharpFuncs.ConfigureBackendFiles(config);
+    }
+} else if (result == StaticFuncs.NugetLib) {
+    StaticFuncs.RefreshScreen("Solution", StaticFuncs.HighlightColor);
+
+    NugetProjectConfig config = new();
+
+    NuGetLibraryFuncs.InitializeSolution(config);
+
+    StaticFuncs.RefreshScreen("Projects", ViteCSharpFuncs.CSharpColor);
+    NuGetLibraryFuncs.AddProjects(config);
 }
