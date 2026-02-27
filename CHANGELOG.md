@@ -2,6 +2,10 @@
 
 ## Changelog
 
+0.4.0 (2/26/26)
+
+- Works now..
+
 0.4.0-beta.1 (2/26/26)
 
 - Version bump, update Directory search so that it checks nested directories (which I was pretty sure it did, then it broke..).
