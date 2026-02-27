@@ -18,7 +18,7 @@ class Program {
         ConfigFileCollector collector;
 
         if (Directory.Exists(folder)) {
-            collector = new([.. Directory.EnumerateFiles(folder)]);
+            collector = new([.. Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories)]);
         } else {
             collector = new([folder]);
         }

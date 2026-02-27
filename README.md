@@ -73,7 +73,7 @@ The current list of types supported are C# primitives. They are all converted to
 - bool
   - bool for C#, boolean for JS, TS, and Zod
 
-Arrays are supported (but see known bug list). Just include `[]` at the end. 
+Arrays are supported (but see known bug list). Just include `[]` at the end for the default value. 
 
 ## HowlDev.Cli.FullStackBuilder
 

@@ -2,6 +2,10 @@
 
 ## Changelog
 
+0.4.0-beta.1 (2/26/26)
+
+- Version bump, update Directory search so that it checks nested directories (which I was pretty sure it did, then it broke..).
+
 0.4.0-beta (2/20/26)
 
 - Updated the underlying system to create a strongly-typed object before creating objects. I'm transitioning towards a separate code generation library, and this is the first step for. (This required an update to the ConfigFileLibrary). 
