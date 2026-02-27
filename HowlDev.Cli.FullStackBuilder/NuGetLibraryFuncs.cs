@@ -9,7 +9,7 @@ public static class NuGetLibraryFuncs {
         if (makeNewFolder) {
             string newFolder = AnsiConsole.Ask<string>("What is the new folder name?");
             StaticFuncs.Run("mkdir", newFolder);
-            StaticFuncs.Run("cd", "./" + newFolder);
+            StaticFuncs.Run("cd", newFolder);
         }
 
         config.SolutionName = AnsiConsole.Ask<string>("What is your solution name?");
@@ -73,7 +73,7 @@ public static class NuGetLibraryFuncs {
 
                         if (config.TestProjects.Count > 0) {
                             ctx.Status("Adding test projects...");
-                            Directory.CreateDirectory("Tests");
+                            StaticFuncs.Run("mkdir", "Tests");
                             StaticFuncs.Run("cd", "Tests");
 
                             foreach (string project in config.TestProjects) {

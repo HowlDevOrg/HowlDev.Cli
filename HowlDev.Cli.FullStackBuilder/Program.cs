@@ -73,7 +73,7 @@ if (result == StaticFuncs.ViteApp) {
 
     if (flowControl) {
         StaticFuncs.RefreshScreen("Nuget", ViteCSharpFuncs.CSharpColor);
-        StaticFuncs.CopyEmbeddedResourceToFile("HowlDev.Cli.FullStackBuilder.TemplateFiles.nuget.workflow.yaml", ".github/workflows");
+        StaticFuncs.CopyEmbeddedResourceToFile("HowlDev.Cli.FullStackBuilder.TemplateFiles.nuget.workflow.yaml", ".github/workflows/push-to-nuget.yaml");
         AnsiConsole.MarkupLine($"Set up [{StaticFuncs.HighlightColor}]trusted publishers[/] in NuGet and your username as a repository secret.");
         AnsiConsole.MarkupLine("This will need to be done for each repository. The secret should be named \"NUGET_USER\"");
         AnsiConsole.Confirm("Press anything to continue.");
