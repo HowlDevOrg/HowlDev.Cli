@@ -80,5 +80,7 @@ if (result == StaticFuncs.ViteApp) {
         Console.ReadKey();
     }
 
+    NuGetLibraryFuncs.FinalizeFiles(config);
+
     StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
 }

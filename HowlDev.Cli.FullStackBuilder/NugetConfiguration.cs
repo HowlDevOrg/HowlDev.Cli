@@ -8,6 +8,16 @@ public enum TestRunnerType {
 }
 
 public static class NugetConfiguration {
+    public static string Gitignore => """
+    .vs/
+    .vscode/
+    bin/
+    obj/
+    node_modules/
+    TestResults/
+    .env
+    """;
+    
     public static string CsProj(string version) => $"""
     <Project Sdk="Microsoft.NET.Sdk">
 

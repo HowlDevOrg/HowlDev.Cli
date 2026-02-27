@@ -56,6 +56,11 @@
 
 ## Changelog
 
+0.1.0-beta.1 (2/26/26)
+
+- Beta testing the NuGet installation section. I'm quite happy with it!
+- After publishing the beta, included a clause to only make the top level folder if it doesn't already exist.
+
 0.0.1 (2/16/26)
 
 - Init

@@ -8,9 +8,12 @@ public static class NuGetLibraryFuncs {
         bool makeNewFolder = AnsiConsole.Confirm("Make a new folder and navigate to it?", false);
         if (makeNewFolder) {
             string newFolder = AnsiConsole.Ask<string>("What is the new folder name?");
-            StaticFuncs.Run("mkdir", newFolder);
-            config.WorkingDir = newFolder;
-            config.TopLevel = newFolder;
+            if (!Directory.Exists(newFolder)) {
+                StaticFuncs.Run("mkdir", newFolder);
+            }
+
+            config.WorkingDir = newFolder + "/";
+            config.TopLevel = newFolder + "/";
         }
 
         config.SolutionName = AnsiConsole.Ask<string>("What is your solution name?");
@@ -36,7 +39,7 @@ public static class NuGetLibraryFuncs {
         }
 
         MultiSelectionPrompt<string> p = new();
-        p.Title($"Select any that were created in [{StaticFuncs.RedColor}]error[/] These will be removed.");
+        p.Title($"Select any that were created in [{StaticFuncs.RedColor}]error[/]. These will be removed.");
         p.AddChoices(tempList);
         p.NotRequired();
         List<string> remove = AnsiConsole.Prompt(p);
@@ -77,7 +80,7 @@ public static class NuGetLibraryFuncs {
                         if (config.TestProjects.Count > 0) {
                             ctx.Status("Adding test projects...");
                             StaticFuncs.Run("mkdir", "Tests", config.WorkingDir);
-                            config.WorkingDir += "/Tests";
+                            config.WorkingDir += "Tests";
 
                             foreach (string project in config.TestProjects) {
                                 string testProjectName = project + ".Tests";
@@ -99,7 +102,7 @@ public static class NuGetLibraryFuncs {
                             foreach (string project in config.TestProjects) { // this is intended to be TestProjects
                                 string testProjectName = project + ".Tests";
                                 StaticFuncs.Run("dotnet", "sln add Tests/" + testProjectName, config.TopLevel);
-                                StaticFuncs.Run("dotnet", $"add reference ../../{project}", Path.Combine(config.WorkingDir, testProjectName));
+                                StaticFuncs.Run("dotnet", $"add reference ../{project}", Path.Combine(config.WorkingDir, testProjectName));
                             }
                         }
 
@@ -111,4 +114,17 @@ public static class NuGetLibraryFuncs {
                 );
     }
 
+    public static void FinalizeFiles(NugetProjectConfig config) {
+        MultiSelectionPrompt<string> prompt = new();
+        prompt.AddChoices("README.md", "CHANGELOG.md", "KNOWN_BUGS.md", ".gitignore");
+        prompt.NotRequired();
+        List<string> newFiles = AnsiConsole.Prompt(prompt);
+        foreach (string file in newFiles) {
+            File.Create(Path.Combine(config.TopLevel, file));
+        }
+
+        if (newFiles.Contains(".gitignore")) {
+            File.WriteAllText(Path.Combine(config.TopLevel, ".gitignore"), NugetConfiguration.Gitignore);
+        }
+    }
 }
