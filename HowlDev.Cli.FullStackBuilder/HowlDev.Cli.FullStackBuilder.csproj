@@ -37,6 +37,7 @@
   <ItemGroup>
     <EmbeddedResource Include="TemplateFiles\frontendAPI\fetchHelpers.js" />
     <EmbeddedResource Include="TemplateFiles\frontendAPI\fetchHelpers.ts" />
+    <EmbeddedResource Include="TemplateFiles\nuget\workflow.yaml" />
   </ItemGroup>
 
 </Project>

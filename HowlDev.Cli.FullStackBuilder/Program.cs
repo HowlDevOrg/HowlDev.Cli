@@ -45,6 +45,8 @@ if (result == StaticFuncs.ViteApp) {
         ViteCSharpFuncs.ConfigureBackend(config);
         ViteCSharpFuncs.ConfigureBackendFiles(config);
     }
+
+    StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
 } else if (result == StaticFuncs.NugetLib) {
     StaticFuncs.RefreshScreen("Solution", StaticFuncs.HighlightColor);
 
@@ -54,4 +56,28 @@ if (result == StaticFuncs.ViteApp) {
 
     StaticFuncs.RefreshScreen("Projects", ViteCSharpFuncs.CSharpColor);
     NuGetLibraryFuncs.AddProjects(config);
+
+    StaticFuncs.RefreshScreen("Testing", ViteCSharpFuncs.CSharpColor);
+    bool flowControl = AnsiConsole.Confirm("Would you like to configure tests? You can create pre-hooked up projects with your preferred suite.");
+
+    if (flowControl) {
+        StaticFuncs.RefreshScreen("Testing", ViteCSharpFuncs.CSharpColor);
+        NuGetLibraryFuncs.CreateTests(config);
+    }
+
+    StaticFuncs.RefreshScreen("Create Solution", ViteCSharpFuncs.CSharpColor);
+    NuGetLibraryFuncs.CompleteSolution(config);
+
+    StaticFuncs.RefreshScreen("Nuget", ViteCSharpFuncs.CSharpColor);
+    flowControl = AnsiConsole.Confirm("Include a NuGet workflow to automatically update versions when you push to a .csproj file?", false);
+
+    if (flowControl) {
+        StaticFuncs.RefreshScreen("Nuget", ViteCSharpFuncs.CSharpColor);
+        StaticFuncs.CopyEmbeddedResourceToFile("HowlDev.Cli.FullStackBuilder.TemplateFiles.nuget.workflow.yaml", ".github/workflows");
+        AnsiConsole.MarkupLine($"Set up [{StaticFuncs.HighlightColor}]trusted publishers[/] in NuGet and your username as a repository secret.");
+        AnsiConsole.MarkupLine("This will need to be done for each repository. The secret should be named \"NUGET_USER\"");
+        AnsiConsole.Confirm("Press anything to continue.");
+    }
+
+    StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
 }

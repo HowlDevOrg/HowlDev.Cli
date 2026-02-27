@@ -34,6 +34,80 @@ public static class NuGetLibraryFuncs {
             }
         }
 
+        MultiSelectionPrompt<string> p = new();
+        p.Title($"Select any that were created in [{StaticFuncs.RedColor}]error[/] These will be removed.");
+        p.AddChoices(tempList);
+        List<string> remove = AnsiConsole.Prompt(p);
+        foreach (string item in remove) {
+            tempList.Remove(item);
+        }
 
+        config.Projects = tempList;
     }
+
+    public static void CreateTests(NugetProjectConfig config) {
+        AnsiConsole.MarkupLine($"What is your preferred [{ViteCSharpFuncs.CSharpColor}]test suite[/]?");
+
+        SelectionPrompt<TestRunnerType> p = new();
+        p.AddChoices(TestRunnerType.TUnit, TestRunnerType.NUnit, TestRunnerType.XUnit);
+        config.TestRunner = AnsiConsole.Prompt(p);
+
+        AnsiConsole.MarkupLine($"Select the projects you'd like to make a tied test suite to.");
+        MultiSelectionPrompt<string> prompt = new();
+        prompt.AddChoices(config.Projects);
+        config.TestProjects = AnsiConsole.Prompt(prompt);
+    }
+
+    public static void CompleteSolution(NugetProjectConfig config) {
+        string version = Environment.Version.Major.ToString();
+
+        AnsiConsole.Status()
+                    .Spinner(Spinner.Known.Star)
+                    .SpinnerStyle(Style.Parse(ViteCSharpFuncs.CSharpColor)).Start(
+                    "Building the C# projects...",
+                    ctx => {
+                        foreach (string project in config.Projects) {
+                            StaticFuncs.Run("dotnet", $"new classlib -f net{version}.0 -o " + project);
+                            File.WriteAllText(Path.Combine(project, project + ".csproj"), NugetConfiguration.CsProj);
+                        }
+
+                        if (config.TestProjects.Count > 0) {
+                            ctx.Status("Adding test projects...");
+                            Directory.CreateDirectory("Tests");
+                            StaticFuncs.Run("cd", "Tests");
+
+                            foreach (string project in config.TestProjects) {
+                                string testProjectName = project + ".Tests";
+                                switch (config.TestRunner) {
+                                    case TestRunnerType.TUnit:
+                                        StaticFuncs.Run("dotnet", $"new console -f net{version}.0 -n " + testProjectName);
+                                        StaticFuncs.Run("cd", testProjectName);
+                                        StaticFuncs.Run("dotnet", "dotnet add package TUnit --prerelease");
+                                        StaticFuncs.Run("cd", "..");
+                                        break;
+                                    case TestRunnerType.NUnit:
+                                        StaticFuncs.Run("dotnet", $"new nunit -f net{version}.0 -o " + testProjectName);
+                                        break;
+                                    case TestRunnerType.XUnit:
+                                        StaticFuncs.Run("dotnet", $"new xunit -f net{version}.0 -o " + testProjectName);
+                                        break;
+                                }
+                            }
+
+                            ctx.Status("Linking projects...");
+                            foreach (string project in config.TestProjects) {
+                                string testProjectName = project + ".Tests";
+                                StaticFuncs.Run("dotnet", "sln add Tests/" + testProjectName);
+                                StaticFuncs.Run("dotnet", $"add reference Tests/{testProjectName} {project}");
+                            }
+                        }
+
+                        ctx.Status("Loading into solution...");
+                        foreach (string project in config.Projects) {
+                            StaticFuncs.Run("dotnet", "sln add " + project);
+                        }
+                    }
+                );
+    }
+
 }

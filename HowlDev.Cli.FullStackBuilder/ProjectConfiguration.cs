@@ -10,5 +10,6 @@ public class ViteFrontendProjectConfig {
 public class NugetProjectConfig {
     public string SolutionName { get; set; } = "";
     public List<string> Projects { get; set; } = [];
+    public List<string> TestProjects { get; set; } = [];
     public TestRunnerType TestRunner { get; set; } = TestRunnerType.NUnit;
 }

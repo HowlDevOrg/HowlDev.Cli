@@ -1,6 +1,6 @@
 namespace HowlDev.Cli.FullStackBuilder;
 
-#pragma warning disable CS1591 
+#pragma warning disable CS1591, CA1819
 public enum FrontendPackageManager {
     Npm,
     Pnpm
