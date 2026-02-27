@@ -9,12 +9,13 @@ public static class NuGetLibraryFuncs {
         if (makeNewFolder) {
             string newFolder = AnsiConsole.Ask<string>("What is the new folder name?");
             StaticFuncs.Run("mkdir", newFolder);
-            StaticFuncs.Run("cd", newFolder);
+            config.WorkingDir = newFolder;
+            config.TopLevel = newFolder;
         }
 
         config.SolutionName = AnsiConsole.Ask<string>("What is your solution name?");
 
-        StaticFuncs.Run("dotnet", "new sln -n " + config.SolutionName);
+        StaticFuncs.Run("dotnet", "new sln -n " + config.SolutionName, config.WorkingDir);
     }
 
     public static void AddProjects(NugetProjectConfig config) {
@@ -37,6 +38,7 @@ public static class NuGetLibraryFuncs {
         MultiSelectionPrompt<string> p = new();
         p.Title($"Select any that were created in [{StaticFuncs.RedColor}]error[/] These will be removed.");
         p.AddChoices(tempList);
+        p.NotRequired();
         List<string> remove = AnsiConsole.Prompt(p);
         foreach (string item in remove) {
             tempList.Remove(item);
@@ -55,6 +57,7 @@ public static class NuGetLibraryFuncs {
         AnsiConsole.MarkupLine($"Select the projects you'd like to make a tied test suite to.");
         MultiSelectionPrompt<string> prompt = new();
         prompt.AddChoices(config.Projects);
+        prompt.NotRequired();
         config.TestProjects = AnsiConsole.Prompt(prompt);
     }
 
@@ -67,44 +70,42 @@ public static class NuGetLibraryFuncs {
                     "Building the C# projects...",
                     ctx => {
                         foreach (string project in config.Projects) {
-                            StaticFuncs.Run("dotnet", $"new classlib -f net{version}.0 -o " + project);
-                            File.WriteAllText(Path.Combine(project, project + ".csproj"), NugetConfiguration.CsProj);
+                            StaticFuncs.Run("dotnet", $"new classlib -f net{version}.0 -o " + project, config.WorkingDir);
+                            File.WriteAllText(Path.Combine(config.WorkingDir, project, project + ".csproj"), NugetConfiguration.CsProj(version));
                         }
 
                         if (config.TestProjects.Count > 0) {
                             ctx.Status("Adding test projects...");
-                            StaticFuncs.Run("mkdir", "Tests");
-                            StaticFuncs.Run("cd", "Tests");
+                            StaticFuncs.Run("mkdir", "Tests", config.WorkingDir);
+                            config.WorkingDir += "/Tests";
 
                             foreach (string project in config.TestProjects) {
                                 string testProjectName = project + ".Tests";
                                 switch (config.TestRunner) {
                                     case TestRunnerType.TUnit:
-                                        StaticFuncs.Run("dotnet", $"new console -f net{version}.0 -n " + testProjectName);
-                                        StaticFuncs.Run("cd", testProjectName);
-                                        StaticFuncs.Run("dotnet", "dotnet add package TUnit --prerelease");
-                                        StaticFuncs.Run("cd", "..");
+                                        StaticFuncs.Run("dotnet", $"new console -f net{version}.0 -n " + testProjectName, config.WorkingDir);
+                                        StaticFuncs.Run("dotnet", "dotnet add package TUnit --prerelease", Path.Combine(config.WorkingDir, testProjectName));
                                         break;
                                     case TestRunnerType.NUnit:
-                                        StaticFuncs.Run("dotnet", $"new nunit -f net{version}.0 -o " + testProjectName);
+                                        StaticFuncs.Run("dotnet", $"new nunit -f net{version}.0 -o " + testProjectName, config.WorkingDir);
                                         break;
                                     case TestRunnerType.XUnit:
-                                        StaticFuncs.Run("dotnet", $"new xunit -f net{version}.0 -o " + testProjectName);
+                                        StaticFuncs.Run("dotnet", $"new xunit -f net{version}.0 -o " + testProjectName, config.WorkingDir);
                                         break;
                                 }
                             }
 
                             ctx.Status("Linking projects...");
-                            foreach (string project in config.TestProjects) {
+                            foreach (string project in config.TestProjects) { // this is intended to be TestProjects
                                 string testProjectName = project + ".Tests";
-                                StaticFuncs.Run("dotnet", "sln add Tests/" + testProjectName);
-                                StaticFuncs.Run("dotnet", $"add reference Tests/{testProjectName} {project}");
+                                StaticFuncs.Run("dotnet", "sln add Tests/" + testProjectName, config.TopLevel);
+                                StaticFuncs.Run("dotnet", $"add reference ../../{project}", Path.Combine(config.WorkingDir, testProjectName));
                             }
                         }
 
                         ctx.Status("Loading into solution...");
                         foreach (string project in config.Projects) {
-                            StaticFuncs.Run("dotnet", "sln add " + project);
+                            StaticFuncs.Run("dotnet", "sln add " + project, config.TopLevel);
                         }
                     }
                 );

@@ -8,12 +8,12 @@ public enum TestRunnerType {
 }
 
 public static class NugetConfiguration {
-    public const string CsProj = """
+    public static string CsProj(string version) => $"""
     <Project Sdk="Microsoft.NET.Sdk">
 
         <PropertyGroup>
             <OutputType>Exe</OutputType>
-            <TargetFramework>net8.0</TargetFramework>
+            <TargetFramework>net{version}.0</TargetFramework>
             <Version>0.0.1</Version>
             <Authors>Sample Author</Authors>
             <Description>Sample Description</Description>
