@@ -33,6 +33,7 @@ class Program {
             if (!availableTypes.Contains(type)) {
                 throw new ArgumentException($"Type {type} is not supported. Supported types: {string.Join(", ", availableTypes)}.");
             }
+
             string outputFolder = result.UnmatchedTokens[i + 1];
             if (outputFolder.EndsWith('/')) outputFolder = outputFolder[0..^1];
 
@@ -66,6 +67,7 @@ class Program {
                         text = ConfigToText.ToTSZodFile(def, fileLookup);
                         break;
                 }
+
                 string newPath = outputFolder + "/" + fileWithoutExtension + "." + type.Split('-')[0];
                 Console.WriteLine($"Writing file to: {newPath}");
                 File.WriteAllText(newPath, text);

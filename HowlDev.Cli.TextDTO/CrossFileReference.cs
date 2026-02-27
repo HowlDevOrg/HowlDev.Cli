@@ -1,4 +1,4 @@
-namespace HowlDev.Cli.TextDTO; 
+namespace HowlDev.Cli.TextDTO;
 
 /// <summary>
 /// Holds a dictionary to locate references to other keys in other files.

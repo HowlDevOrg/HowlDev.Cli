@@ -1,6 +1,6 @@
 using Spectre.Console;
 
-namespace HowlDev.Cli.FullStackBuilder; 
+namespace HowlDev.Cli.FullStackBuilder;
 #pragma warning disable CS1591
 
 public static class ViteCSharpFuncs {
@@ -204,6 +204,7 @@ public static class ViteCSharpFuncs {
                     newFile.Add(line);
                 }
             }
+
             File.WriteAllLines(appSettings, newFile);
         }
     }

@@ -11,6 +11,7 @@ public static class NuGetLibraryFuncs {
             StaticFuncs.Run("mkdir", newFolder);
             StaticFuncs.Run("cd", "./" + newFolder);
         }
+
         config.SolutionName = AnsiConsole.Ask<string>("What is your solution name?");
 
         StaticFuncs.Run("dotnet", "new sln -n " + config.SolutionName);
@@ -25,13 +26,14 @@ public static class NuGetLibraryFuncs {
             if (userPrompt == "!") {
                 break;
             }
+
             if (userPrompt.StartsWith('.')) {
                 tempList.Add(config.SolutionName + userPrompt);
             } else {
                 tempList.Add(userPrompt);
             }
         }
-        
-        
+
+
     }
 }

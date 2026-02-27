@@ -39,6 +39,7 @@ public static class ConfigToText {
                 CSharpEnumBuilder(def, output);
                 break;
         }
+
         return output.ToString();
     }
 
@@ -76,6 +77,7 @@ public static class ConfigToText {
         if (def.IgnoreWarnings) {
             output.AppendLine("/* eslint-enable */");
         }
+
         return output.ToString();
     }
 
@@ -115,6 +117,7 @@ public static class ConfigToText {
         if (def.IgnoreWarnings) {
             output.AppendLine("/* eslint-enable */");
         }
+
         return output.ToString();
     }
 
@@ -144,6 +147,7 @@ public static class ConfigToText {
                 } else {
                     d = opt;
                 }
+
                 d = $" {{ get; set; }} = {d};";
             } else {
                 d = " { get; set; } ";
@@ -156,6 +160,7 @@ public static class ConfigToText {
             output.AppendLine($"    public {type} {name}{d}");
 
         }
+
         output.AppendLine("}");
     }
 
@@ -181,6 +186,7 @@ public static class ConfigToText {
             output.AppendLine($"    {name}: {ConvertCSharpToJS(type)}{nullable}{trailingSpace}");
 
         }
+
         output.AppendLine("}");
     }
 
@@ -207,9 +213,11 @@ public static class ConfigToText {
             if (isArray) {
                 d += ".array()";
             }
+
             if (option.Nullable) {
                 d += ".nullable()";
             }
+
             if (option.Default != null) {
                 string local;
                 string opt = option.Default;
@@ -218,19 +226,21 @@ public static class ConfigToText {
                 } else {
                     local = opt;
                 }
+
                 d += $".default({local})";
             }
 
             output.AppendLine($"    {name}: z.{ConvertCSharpToJS(type)}(){d},");
 
         }
+
         output.AppendLine("});").AppendLine();
 
         output.AppendLine($"export type {def.Name}Type = z.infer<typeof {def.Name}Schema>;");
     }
 
     private static void ZodEnumBuilder(DTODefinition def, StringBuilder output) {
-        output.AppendLine($"export const {def.Name}Schema = z.enum([\"{string.Join("\", \"", def.EnumValues)}\"]);" ).AppendLine();
+        output.AppendLine($"export const {def.Name}Schema = z.enum([\"{string.Join("\", \"", def.EnumValues)}\"]);").AppendLine();
         output.AppendLine($"export type {def.Name}Type = z.infer<typeof {def.Name}Schema>;").AppendLine();
     }
 }
