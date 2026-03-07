@@ -39,7 +39,7 @@ public static class NuGetLibraryFuncs {
         }
 
         MultiSelectionPrompt<string> p = new();
-        p.Title($"Select any that were created in [{StaticFuncs.RedColor}]error[/]. These will be removed.");
+        p.Title($"[{StaticFuncs.HighlightColor}]Select[/] any that were created [{StaticFuncs.RedColor}]in error[/]. These will be removed.");
         p.AddChoices(tempList);
         p.NotRequired();
         List<string> remove = AnsiConsole.Prompt(p);

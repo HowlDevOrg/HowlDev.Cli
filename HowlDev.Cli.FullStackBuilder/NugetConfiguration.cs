@@ -22,6 +22,7 @@ public static class NugetConfiguration {
     <Project Sdk="Microsoft.NET.Sdk">
 
         <PropertyGroup>
+            <IsPackable>false</IsPackable>
             <OutputType>Exe</OutputType>
             <TargetFramework>net{version}.0</TargetFramework>
             <Version>0.0.1</Version>
