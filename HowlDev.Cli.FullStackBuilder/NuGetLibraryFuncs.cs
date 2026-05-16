@@ -69,8 +69,8 @@ public static class NuGetLibraryFuncs {
 
         AnsiConsole.Status()
                     .Spinner(Spinner.Known.Star)
-                    .SpinnerStyle(Style.Parse(ViteCSharpFuncs.CSharpColor)).Start(
-                    "Building the C# projects...",
+                    .SpinnerStyle(Style.Parse(ViteCSharpFuncs.CSharpColor))
+                    .Start("Building the C# projects...",
                     ctx => {
                         foreach (string project in config.Projects) {
                             StaticFuncs.Run("dotnet", $"new classlib -f net{version}.0 -o " + project, config.WorkingDir);
@@ -115,16 +115,15 @@ public static class NuGetLibraryFuncs {
     }
 
     public static void FinalizeFiles(NugetProjectConfig config) {
+        AnsiConsole.MarkupLine($"Select any files you want to generate.");
+
         MultiSelectionPrompt<string> prompt = new();
         prompt.AddChoices("README.md", "CHANGELOG.md", "KNOWN_BUGS.md", ".gitignore");
         prompt.NotRequired();
         List<string> newFiles = AnsiConsole.Prompt(prompt);
         foreach (string file in newFiles) {
-            File.Create(Path.Combine(config.TopLevel, file));
-        }
-
-        if (newFiles.Contains(".gitignore")) {
-            File.WriteAllText(Path.Combine(config.TopLevel, ".gitignore"), NugetConfiguration.Gitignore);
+            string content = file == ".gitignore" ? NugetConfiguration.Gitignore : "";
+            File.WriteAllText(Path.Combine(config.TopLevel, file), content);
         }
     }
 }

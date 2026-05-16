@@ -45,8 +45,6 @@ if (result == StaticFuncs.ViteApp) {
         ViteCSharpFuncs.ConfigureBackend(config);
         ViteCSharpFuncs.ConfigureBackendFiles(config);
     }
-
-    StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
 } else if (result == StaticFuncs.NugetLib) {
     StaticFuncs.RefreshScreen("Solution", StaticFuncs.HighlightColor);
 
@@ -80,7 +78,9 @@ if (result == StaticFuncs.ViteApp) {
         Console.ReadKey();
     }
 
-    NuGetLibraryFuncs.FinalizeFiles(config);
+    StaticFuncs.RefreshScreen("Misc Files", ViteCSharpFuncs.CSharpColor);
 
-    StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
+    NuGetLibraryFuncs.FinalizeFiles(config);
 }
+
+StaticFuncs.RefreshScreen("Complete!", StaticFuncs.HighlightColor);
