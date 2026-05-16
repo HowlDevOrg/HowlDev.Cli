@@ -23,7 +23,6 @@ public static class NugetConfiguration {
 
         <PropertyGroup>
             <IsPackable>false</IsPackable>
-            <OutputType>Exe</OutputType>
             <TargetFramework>net{version}.0</TargetFramework>
             <Version>0.0.1</Version>
             <Authors>Sample Author</Authors>

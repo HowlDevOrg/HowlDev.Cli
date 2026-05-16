@@ -102,7 +102,8 @@ public static class NuGetLibraryFuncs {
                             foreach (string project in config.TestProjects) { // this is intended to be TestProjects
                                 string testProjectName = project + ".Tests";
                                 StaticFuncs.Run("dotnet", "sln add Tests/" + testProjectName, config.TopLevel);
-                                StaticFuncs.Run("dotnet", $"add reference ../{project}", Path.Combine(config.WorkingDir, testProjectName));
+                                StaticFuncs.Run("dotnet", $"add reference ../../{project}", Path.Combine(config.WorkingDir, testProjectName));
+                                // the above is intended to be project
                             }
                         }
 
@@ -123,7 +124,7 @@ public static class NuGetLibraryFuncs {
         List<string> newFiles = AnsiConsole.Prompt(prompt);
         foreach (string file in newFiles) {
             string content = file == ".gitignore" ? NugetConfiguration.Gitignore : "";
-            File.WriteAllText(Path.Combine(config.TopLevel, file), content);
+            File.WriteAllText(Path.Combine(config.TopLevel ?? "", file), content);
         }
     }
 }
